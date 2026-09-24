@@ -1,0 +1,234 @@
+{
+  "files": {
+    "assets/census-1930-excerpt.jpg": {
+      "bytes": 968028,
+      "sha256": "4f16720562c8a6b3ae69973794774282ebdd133308dfcf8edfbd765ecad5ad4e"
+    },
+    "assets/display/census-1930-excerpt.jpg": {
+      "bytes": 124451,
+      "sha256": "c9cdf0580a58b73d0e210f60f39d2b6eda9e79d5e03158d9774fb986e6de2032"
+    },
+    "assets/display/census-detail.jpg": {
+      "bytes": 241245,
+      "sha256": "593e43c691f1c80a303e039cd5159645f0f0300eb419fff0554f9de3484d0503"
+    },
+    "assets/display/deed-detail.jpg": {
+      "bytes": 293689,
+      "sha256": "8b7b8111002c0f0d69be27c1f577e4520f7a40403b9fc82ecd80183241de7611"
+    },
+    "assets/display/esco-draft-1918.jpg": {
+      "bytes": 172397,
+      "sha256": "b3b42819425bbbf0a16c3c696f20512644ed3ba71443f379cd886784f533c769"
+    },
+    "assets/display/esco-obituary-1958.jpg": {
+      "bytes": 164530,
+      "sha256": "91e340f1f52c1ebb9c9f0c5b19c5b45022ff86a2df2973d60ee84ee752ee41ec"
+    },
+    "assets/display/esco-portrait-caption.jpg": {
+      "bytes": 93863,
+      "sha256": "4db5d3c45c75731179509ebabd9ce1b0f377e6ecb149d27f774c585ec1c2da60"
+    },
+    "assets/display/field-detail.jpg": {
+      "bytes": 49941,
+      "sha256": "272da6e8f6115d495a110633733ea120981bda3a392b298b3631e0fc25de659c"
+    },
+    "assets/display/graduation-detail.jpg": {
+      "bytes": 40743,
+      "sha256": "700d97a145f5cd6597fbbfbaa79191f89d8ed9d3cf1505c5b92f45acee0f9c67"
+    },
+    "assets/display/heirs-detail.jpg": {
+      "bytes": 197033,
+      "sha256": "d3bab16e2e961c3712fef850a94c2cc5e78181b2439829f85501c7f89571e602"
+    },
+    "assets/display/jacob-deed-1789.jpg": {
+      "bytes": 428365,
+      "sha256": "054e61fc17ee7af63309ce39bf2281e7e89b78e4b6fca926e066f357e05cef32"
+    },
+    "assets/display/jacob-heirs-survey-1831.jpg": {
+      "bytes": 277716,
+      "sha256": "0e1a032c515516ca7f0ff4b5facc6ceea141ce11bea351d429a173f49c3361e5"
+    },
+    "assets/display/john-portrait.jpg": {
+      "bytes": 194238,
+      "sha256": "7532784721dabbfde4665ab7ab3ef05f44e6172af36cc75d4a2624f7345bb9ff"
+    },
+    "assets/display/julius-will-1768.jpg": {
+      "bytes": 298812,
+      "sha256": "266d490fb6e8c747cc9dde7fe2e584ca787ffc075804a7691029ca0eb157a293"
+    },
+    "assets/display/laura-grave.jpg": {
+      "bytes": 235950,
+      "sha256": "1f57ce5a2c9c9e650565fe581f3302fcd1901c36323658272e1e4a5a78d6bb3f"
+    },
+    "assets/display/margaret-obituary.jpg": {
+      "bytes": 82255,
+      "sha256": "98b1eaea411847f5c9b7cddde082f1c3f310f5ec8e61c0e50f8c3db35543ee2d"
+    },
+    "assets/display/marriage-1946.jpg": {
+      "bytes": 207930,
+      "sha256": "5c398adfffd05c1023762d14e2234e5af539878e71beb1f532ea83a8770b0b14"
+    },
+    "assets/display/mary-lou-obituary-1946.jpg": {
+      "bytes": 130869,
+      "sha256": "3ff2273ef0170917ace98821f54be961bd5df083938af6fcf4ba5c8ab72bac82"
+    },
+    "assets/display/muster-1862.jpg": {
+      "bytes": 90178,
+      "sha256": "bf848881140aa3c0d823a117830bb98eb48391cc762b5e25d0ed17284a2b822e"
+    },
+    "assets/display/nursing-1941.jpg": {
+      "bytes": 330201,
+      "sha256": "f995dc2f5cd884fa25c2d2a10c37998b17a91580c6bd94f977e70a244093e6ac"
+    },
+    "assets/display/parole-1863.jpg": {
+      "bytes": 88081,
+      "sha256": "262d2a8f6ece9cbdb3d5afeea5da492b0cff005fea2e5e4882363e53dd4504bf"
+    },
+    "assets/display/plat-1851.jpg": {
+      "bytes": 435663,
+      "sha256": "f4bff3fc9752f66eaca495fe8a6170aa940354ff5dd517099ee943a42e1b02e1"
+    },
+    "assets/display/port-hudson-battery.jpg": {
+      "bytes": 174590,
+      "sha256": "5a47593875b5a46161f335dd4e8dad488ff65a9c663a7ebaca5cb1019795958d"
+    },
+    "assets/display/port-hudson-camp.jpg": {
+      "bytes": 190167,
+      "sha256": "79c85b9cf118ab4d6d024026bd4d700f4dc06dcf4d4df164c46d76df5e21a4e2"
+    },
+    "assets/display/port-hudson-fortifications.jpg": {
+      "bytes": 160595,
+      "sha256": "c18b89791941af37ba44d756f3c8a6976ac53e194a9dad7251681b1655d3a22d"
+    },
+    "assets/display/seaborn-obituary-1884.jpg": {
+      "bytes": 300959,
+      "sha256": "4697c350719a662514814869a43db5a7787707cb0d3330cf21796d04e7fb3b6c"
+    },
+    "assets/display/seaborn-obituary-1919.jpg": {
+      "bytes": 483629,
+      "sha256": "2887bd0e33877dedcf35c3bdd53bf872fa5505534a13401b374d0d225c7c812d"
+    },
+    "assets/display/touro-infirmary-c1910.jpg": {
+      "bytes": 285124,
+      "sha256": "19b0a0dcf396233756ed3bf2029c64a870f6cac0e8a086ee34b42a0c84526938"
+    },
+    "assets/esco-draft-1918.jpg": {
+      "bytes": 131343,
+      "sha256": "c87350ed992c61b1d3ecc693a22ccc04d8fc6d0dbc7fc94af77b1ca48f77c3e9"
+    },
+    "assets/esco-obituary-1958.jpg": {
+      "bytes": 348675,
+      "sha256": "be41533ae56d53064b42c21a3d4a0fe58b28c40a412d6be5471955b68618ccf0"
+    },
+    "assets/esco-portrait-caption.jpg": {
+      "bytes": 199054,
+      "sha256": "dc6bd04a5e809645c0948a921de31bdb4ca521af25ecc5249130fc288f61c876"
+    },
+    "assets/jacob-deed-1789.jpg": {
+      "bytes": 1656670,
+      "sha256": "3fc82cdd13822ab6f7775a4bd30d19366fff67fa964a2f2a99cced52e33e31e7"
+    },
+    "assets/jacob-heirs-survey-1831.jpg": {
+      "bytes": 875450,
+      "sha256": "71afa006ca4b8d83d1e049410d59bfbc75b75fcacf942d9e69c54be9ca8c9104"
+    },
+    "assets/john-portrait.jpg": {
+      "bytes": 1863463,
+      "sha256": "7a1b30d3f9d3ac5c3522b26ae93f556bd6646da9413b3b4a2f13e38ab5936e8b"
+    },
+    "assets/julius-will-1768.jpg": {
+      "bytes": 1912420,
+      "sha256": "3c988d0d8f67cdd39cb4a6eb3fd8565b7747293cdef51e9907165a1811af1d0c"
+    },
+    "assets/laura-grave.png": {
+      "bytes": 5471503,
+      "sha256": "fd248cc5cd041f6960231428c0dd43c21fff6e0d1d94258383cb4f811146aa1f"
+    },
+    "assets/margaret-obituary.jpeg": {
+      "bytes": 85817,
+      "sha256": "aa1641999dd3ccd970f9823d09c10513f5c2642bb61a7d025964b21d24a1416d"
+    },
+    "assets/marriage-1946.jpg": {
+      "bytes": 341253,
+      "sha256": "4943019d6ac961a9685117de958b4923b289ff855bc9d78ecca7070c6f8ea91b"
+    },
+    "assets/mary-lou-obituary-1946.png": {
+      "bytes": 400373,
+      "sha256": "e9f1d2c8bf1f5f18e62843e2c51ad8b8b94915d5cb5e009c8baecb5ff0c08e16"
+    },
+    "assets/muster-1862.jpg": {
+      "bytes": 414619,
+      "sha256": "594da964a8d85d26f246d0f098e82a9853bfe14a03837a58739a03b77bf41a34"
+    },
+    "assets/nursing-1941.jpg": {
+      "bytes": 1569756,
+      "sha256": "b1f0b6f898890935f49ea4c9fbf31bf655b8161517fd7317157a6a4d60d05aee"
+    },
+    "assets/parole-1863.jpg": {
+      "bytes": 411709,
+      "sha256": "28a89a25561b25e97f5b0812fc84b5d7e84610f9bdb9bec7aaa9ab9d2088187f"
+    },
+    "assets/plat-1851.jpg": {
+      "bytes": 544626,
+      "sha256": "19552f2b549148c20629907c1b38d1d7aea15ea13b0ecbd157d00a01747f3372"
+    },
+    "assets/port-hudson-battery.jpg": {
+      "bytes": 3473319,
+      "sha256": "1edd130eb9fdceb02a735182bd14bd17ef2456974145dde7d7d44e8b13372d4e"
+    },
+    "assets/port-hudson-camp.jpg": {
+      "bytes": 3771108,
+      "sha256": "ecefcc87d99f0908d8c936bcea0f81daa3d3168c43bc7eefbc517b0b204486c1"
+    },
+    "assets/port-hudson-fortifications.jpg": {
+      "bytes": 3557700,
+      "sha256": "11309fa36a8e38d4f21911ec22974514e9dec33d578c2c0410820040796b5250"
+    },
+    "assets/seaborn-obituary-1884.jpg": {
+      "bytes": 649355,
+      "sha256": "ef5febb8941470b008867e5ec66a52b1abc2a0653cf35a2534edb78cbe5efb3e"
+    },
+    "assets/seaborn-obituary-1919.png": {
+      "bytes": 1576202,
+      "sha256": "e5b7d9104c2e6210709a8e5bad2f97b91638c7a4e7ca24477aa75deba99aa4c5"
+    },
+    "assets/touro-infirmary-c1910.jpg": {
+      "bytes": 3118206,
+      "sha256": "584d080e11e0c0c86e6d1e6935022eacf07625a930011be8eded7ddd6eb7a55e"
+    },
+    "index.html": {
+      "bytes": 247143,
+      "sha256": "8d2663056c40dd3104c73d3216d2d303ca8bac1a5d6162ea81dfffdba2aacc69"
+    },
+    "reading.css": {
+      "bytes": 1070,
+      "sha256": "c58aeae91668c8c1e29444e5fa87e894b3a91e634d4ed6d2bb77f056e401c0d5"
+    },
+    "record-viewer.js": {
+      "bytes": 8350,
+      "sha256": "ce2bffad2e8b11682e213232394d2414fc3d6fb67ed4c5641cf161940a6b896f"
+    },
+    "story.html": {
+      "bytes": 59824,
+      "sha256": "c7bf62534ec4dbf91ecf1650e222a23a3c5f3a4e18818e08a2f06a503d582420"
+    },
+    "walk-data.js": {
+      "bytes": 86790,
+      "sha256": "0e6da2363392d5dc5c14af40dd79e260581afe56459c08f9e32e8fe53c08fbfe"
+    },
+    "walk-map.js": {
+      "bytes": 13274,
+      "sha256": "f95de968af09168d940d245ef060b9a133fa570b2fbc66043da4659c5afb2d29"
+    },
+    "walk.css": {
+      "bytes": 35856,
+      "sha256": "31835d01be02116b67ca1b0044982ccab3e19540abd6a9c7aa79b247012873ed"
+    },
+    "walk.js": {
+      "bytes": 19208,
+      "sha256": "2fa898df4b3857a9d0655d38cd9c8c13f2388d2f956d5c68afe75642a3b0592f"
+    }
+  },
+  "bytes": 39585378,
+  "reviewSha256": "d947a7dd0bbfd694837660bbc8b0e0a42fd295010103440863ececf1d7d01cf2"
+}
