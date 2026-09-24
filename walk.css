@@ -73,3 +73,7 @@ html{scrollbar-gutter:stable}#family-stage{pointer-events:auto}.person-link{font
 @media print{.beat,.js .beat{min-height:0!important;break-inside:avoid;padding:22px 0!important}.passage,.hero .passage{width:100%!important;max-width:none!important;margin:0!important}.masthead,.landscape,.people-links,.passage-records,dialog,.start-link,.reading-estimate,#resume-link,.page-footer,.skip{display:none!important}.js .narrative{margin-top:0!important}.narrative{padding:0 8mm}.passage h1{font-size:38pt}.passage h2{font-size:23pt}.passage p{font-size:12pt!important;line-height:1.5!important}.afterword{padding:20px}.part-number{margin-bottom:10px}}
 .family-stage .family-child{opacity:1}
 @media(max-width:700px){.family-stage .family-person>span{font-size:22px}.family-stage .couple{padding-top:16px;padding-bottom:16px}.family-stage .family-child .family-person>span{font-size:22px}}
+
+/* Regional waypoints retain modern state outlines as geographic reference. */
+#regional-stage[data-region=GA] #regional-state-GA{fill:#a6bfa3}
+#regional-stage[data-pin=hidden] .pin{opacity:0!important}

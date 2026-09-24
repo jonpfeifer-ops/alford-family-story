@@ -82,14 +82,15 @@ function draw(){
  $('family-stage').style.opacity=val('familyVisible');$('graphic-stage').style.opacity=val('graphic');
  $('family-stage').inert=!shown.family;$('graphic-stage').inert=!shown.graphic;
  $('regional-stage').style.opacity=val('regional');
- if(shown.regional){const nc=shown.region==='NC',cx=nc?945:879,cy=nc?249:323;
+ if(shown.regional){const centers={NC:[945,249],SC:[879,323],GA:[811.3,366.6]};const [cx,cy]=shown.regionCenter||centers[shown.region]||centers.NC;
   $('regional-world').setAttribute('transform',`translate(${600-cx*3.2} ${335-cy*3.2}) scale(3.2)`);
-  $('regional-stage').dataset.region=shown.region;$('regional-label').textContent=shown.regionLabel||shown.place;
+  $('regional-stage').dataset.region=shown.region;$('regional-stage').dataset.pin=shown.showRegionPin===false?'hidden':'visible';$('regional-label').textContent=shown.regionLabel||shown.place;
  }
  if(shownId!==shown.id){shownId=shown.id;
   if(shown.family)$('family-stage').innerHTML=familyHTML(shown);
   if(shown.graphic)$('graphic-stage').innerHTML=graphicHTML(shown);
   document.body.dataset.visual=shown.visual;
+  const context=$('geographic-context').children;context[0].textContent=shown.mapHeading||'WASHINGTON PARISH';context[1].textContent=shown.mapPlace||'Louisiana · Bogue Chitto River';
  }
  $('progress-fill').style.transform=`scaleX(${clamp(scrollY/(document.documentElement.scrollHeight-innerHeight))})`;
  if(active!==i){active=i;$('current-year').textContent=a.year;document.querySelector('.header-place').textContent=a.place;document.body.dataset.scene=a.id;
