@@ -197,32 +197,32 @@
       "sha256": "584d080e11e0c0c86e6d1e6935022eacf07625a930011be8eded7ddd6eb7a55e"
     },
     "experience.css": {
-      "bytes": 19512,
-      "sha256": "b4cf822132c97d07a8d050fcc885b006cf54b5beeb399c35757d9b3a7911cebc"
+      "bytes": 19670,
+      "sha256": "d3aaba9d000d97dbc97a7b081562172d18065d18c68da30731de022e699d84b2"
     },
     "explore-data.js": {
-      "bytes": 55010,
-      "sha256": "78cbc6a111b517e490a20d1478e012d52a47494211062db1daa3f0a16d9cdcb7"
+      "bytes": 55471,
+      "sha256": "4a4518a2b82215d78391c3fdff26cc45e25a98423790d38ee72bd9be757b4481"
     },
     "explore-reading.html": {
-      "bytes": 49394,
-      "sha256": "3d8206cdac4141647f51e11718ddde5eeaa9ded534bafe84f698b0ccc489873c"
+      "bytes": 49954,
+      "sha256": "d9fb4e642157f7e8370919f7e3a5e24132afcba1d839ab5311c0f47e58502107"
     },
     "explore.css": {
-      "bytes": 22523,
-      "sha256": "3f98947f202f2ac4fedb9814d4558e2aad27afe30e6889134a819788b7dcba76"
+      "bytes": 23580,
+      "sha256": "9101be14f4f2f208b7272517fa5f6cca5a60b9e4ecdb1782e97d56b4c669e017"
     },
     "explore.html": {
       "bytes": 3525,
       "sha256": "4bd51fea3307d2b7240fdfb7ce367e501e2e8180cf95789cea795351ae3a5dac"
     },
     "explore.js": {
-      "bytes": 20294,
-      "sha256": "034021e5afa24ec30cb2c4c96dc522642180932cf11ef198bb84bcbc74820c94"
+      "bytes": 22515,
+      "sha256": "beb3912846ab67dae399d01121439740e2b322edf3dd25126ef6335e0b9e9ec2"
     },
     "index.html": {
-      "bytes": 521219,
-      "sha256": "81f916fa18fb7c7dc9568c99e2f5a7af23ea73769352c73a943090c68a807261"
+      "bytes": 520116,
+      "sha256": "8ccbb0890c4564f811051a260332958572c41636655c3aabee0ac533ea6bb5ee"
     },
     "reading.css": {
       "bytes": 1753,
@@ -233,16 +233,16 @@
       "sha256": "ce2bffad2e8b11682e213232394d2414fc3d6fb67ed4c5641cf161940a6b896f"
     },
     "story.html": {
-      "bytes": 104816,
-      "sha256": "129e5d96884ae325dca06a4579e933d4462a1c229dca7998c4799c72f76c7513"
+      "bytes": 106330,
+      "sha256": "fba5c969dda0e31f1702c099330f777b730ec80f5f52c4d0a2cd225e0675a76c"
     },
     "tree-engine.js": {
       "bytes": 21020,
       "sha256": "3d64e56fea15839b1643656437b03798deff6a8fc2fa63831abd22a9b0b8679b"
     },
     "walk-data.js": {
-      "bytes": 230169,
-      "sha256": "9d463027602260e8e4d8fd0106e5baf76385ac58c73b84a5806b14a625ff18e1"
+      "bytes": 233801,
+      "sha256": "6531cc63a149e05408b620559e7c2b9bebe33f1a0427d6e4cf626e50f5145896"
     },
     "walk-map.js": {
       "bytes": 13274,
@@ -257,6 +257,6 @@
       "sha256": "bec8253073ed04a247b19ed17e084150fe9c05658da75cd61e9fd104cdf84d19"
     }
   },
-  "bytes": 40286821,
-  "reviewSha256": "40886f80070cd72c8ea11943b54d8c80bd9d55087337aa2a830bfee5f8f64688"
+  "bytes": 40295321,
+  "reviewSha256": "09640cd43e8c655f7b5f45a5f8f13def0c403304280719980f9b294e78eb8d6c"
 }

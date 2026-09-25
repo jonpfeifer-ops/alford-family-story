@@ -50,3 +50,6 @@ html{scrollbar-gutter:stable}
 @media(max-width:700px){.masthead{gap:10px}.wordmark{white-space:normal;max-width:67px;flex:0 0 67px;font-size:10px;line-height:1.4}.chapter-location{gap:6px;flex-shrink:0}.masthead #current-year{min-width:0;font-size:12px}.masthead nav{gap:13px}.masthead nav span{display:none}.family-orientation p{white-space:normal}}@media(max-width:360px){.wordmark{flex-basis:54px;max-width:54px;font-size:9px}.masthead #current-year{font-size:11px}.masthead nav{gap:11px}.masthead nav a,.masthead nav button{font-size:12px}.masthead{gap:8px}}
 
 .record-sequence{display:flex;justify-content:space-between;gap:18px;border-top:1px solid #bec7b1;margin-top:20px;padding-top:10px}.record-sequence button{font:13px/1.5 var(--sans);padding:10px 0;text-align:left;max-width:48%;min-height:44px}.record-sequence button:last-child{text-align:right}
+
+/* The scene anchor already leaves 140px below the phone header. */
+@media(max-width:700px){.beat:not(.opening){padding-top:max(260px,calc(63svh - 140px))}}
