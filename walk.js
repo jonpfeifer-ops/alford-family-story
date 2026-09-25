@@ -121,6 +121,7 @@ function drawJourney(s,p){
  $('regional-stage').dataset.region=s.region;$('regional-stage').dataset.pin='hidden';
 }
 function revealGraphic(s,p){
+ if(s.visual==='river-home'){if(Math.abs(p-tarScrollProgress)>.004){cancelAnimationFrame(tarMotionFrame);tarMotionFrame=0;tarOverride=null;}tarScrollProgress=p;if(!tarMotionFrame)paintTarMap(p);}else {cancelAnimationFrame(tarMotionFrame);tarMotionFrame=0;}
  const phase=reduced.matches?1:clamp(p/.65),elements=$('graphic-stage').querySelectorAll('.milestones>div,.household-card,.lineage-row,.census-adults>div');
  elements.forEach((el,i)=>{el.style.opacity=1;el.style.transform='none';});
  const blocks=$('graphic-stage').querySelectorAll('.farm-blocks i');blocks.forEach(el=>{el.style.opacity=1;});
@@ -133,8 +134,50 @@ const generations=[['john','margaret'],['seaborn','laura'],['esco','mary-lou'],[
 function familyPosition(key){return generations.findIndex(row=>row.includes(key));}
 function familyTrail(key){const at=familyPosition(key);return `<div class="generation-trail" aria-label="Place in Christine’s family">${generations.map((r,i)=>`<span class="${i===at?'current':''}">${esc(people[r[0]].name.split(' ')[0])}</span>${i<3?'<i aria-hidden="true">→</i>':''}`).join('')}</div>`;}
 function familyHTML(s){const f=s.family;return `<div class="family-frame">${familyTrail(f[0])}<p class="family-overline">${esc(s.year)} · ${esc(s.familyCaption||'Marriage')}</p><div class="couple">${personButton(f[0])}<span class="couple-join" aria-hidden="true">&</span>${personButton(f[1])}</div>${f[2]&&s.child?`<div class="family-child"><span class="descent-line"></span><small>${esc(s.childLabel||'THEIR CHILD')}</small>${personButton(f[2],'child-card')}</div>`:f[2]?'<div class="family-child-space" aria-hidden="true"></div>':''}<p class="family-context">Select a name to see the records <span aria-hidden="true">↗</span></p></div>`;}
+let tarMotionFrame=0,tarWide=false,tarOverride=null,tarProgress=0,tarScrollProgress=0;
+function tarMapHTML(s){
+ cancelAnimationFrame(tarMotionFrame);tarMotionFrame=0;tarWide=false;tarOverride=null;
+ const m=data.tarRiverMap,r=s.riverHome;
+ const rivers=m.rivers.map(v=>`<g class="tar-waterway ${v.name==='Tar River'?'is-tar':''}"><path class="tar-water-wash" d="${v.d}"/><path class="tar-water-ink" d="${v.d}"/></g>`).join('');
+ const county=m.counties.map(v=>`<path class="tar-county ${v.name==='Franklin'?'is-franklin':''}" d="${v.d}"/>`).join('');
+ return `<section class="tar-atlas" aria-label="Tar River and surrounding places"><header><small>NORTH CAROLINA · ${esc(s.year)}</small><h3>${esc(r.mapTitle)}</h3><p>${esc(r.family)}</p></header><div class="tar-map-canvas"><svg class="tar-map" role="img" aria-label="Map of the Tar River through present-day Franklin County, past Louisburg, Rocky Mount and Tarboro. The Alford farm’s exact location is unknown."><g class="tar-world">${m.states.map(v=>`<path class="tar-state" d="${v.d}"/>`).join('')}${county}${rivers}</g><g class="tar-town-dots">${m.labels.filter(v=>v.kind==='town').map(v=>`<circle data-name="${esc(v.name)}" r="3"/>`).join('')}</g></svg><div class="tar-map-labels" aria-hidden="true">${m.labels.map(v=>`<span class="tar-label tar-label-${v.kind}" data-name="${esc(v.name)}">${esc(v.name)}</span>`).join('')}</div><span class="tar-north" aria-hidden="true">N<span>↑</span></span><div class="tar-scale"><i></i><span></span></div><aside class="tar-inset" aria-label="Location in North Carolina"><svg viewBox="-625 -420 930 730" aria-hidden="true">${m.states.map(v=>`<path d="${v.d}" class="${v.name==='NC'?'inset-nc':''}"/>`).join('')}<rect/><text x="-330" y="-210">VA</text><text x="-260" y="100">NC</text></svg></aside></div><footer><p class="tar-inheritance">${esc(r.inheritanceNote)}</p><div class="tar-actions"><button type="button" data-tar-action="wide" aria-pressed="false">Wider view</button><button type="button" data-tar-action="replay"${reduced.matches?' hidden':''}>↻ Replay zoom</button><button type="button" id="tar-will-open" data-source="will">Read the will ↗</button></div><p class="tar-note">${esc(r.note)}</p></footer></section>`;
+}
+function paintTarMap(p){
+ const root=$('graphic-stage').querySelector('.tar-atlas');if(!root)return;
+ tarProgress=p;const m=data.tarRiverMap,box=root.querySelector('.tar-map-canvas'),w=box.clientWidth,h=box.clientHeight;
+ const phase=reduced.matches?1:smooth(clamp(p/.68)),a=m.frames.region,b=m.frames.river,c=tarOverride||(tarWide?a:a.map((v,i)=>mix(v,b[i],phase)));
+ const scale=Math.min((w-32)/c[2],(h-36)/c[3]),x=w/2-c[0]*scale,y=h*.47-c[1]*scale;
+ root.querySelector('.tar-map').setAttribute('viewBox',`0 0 ${w} ${h}`);root.querySelector('.tar-world').setAttribute('transform',`translate(${x} ${y}) scale(${scale})`);
+ root.dataset.view=c[2]>230?'region':'river';root.dataset.camera=c.map(v=>v.toFixed(2)).join(',');
+ const project=pt=>[x+pt[0]*scale,y+pt[1]*scale];
+ const inset=root.querySelector('.tar-inset'),occupied=[{x:w-45,y:0,w:45,h:50},{x:w-inset.offsetWidth-12,y:h-inset.offsetHeight-12,w:inset.offsetWidth+12,h:inset.offsetHeight+12},{x:0,y:h-36,w:85,h:36}];
+ const order=['Louisburg','Tar River','Franklinton','Tarboro','Rocky Mount','Raleigh','Oxford','Greenville','Warrenton','FRANKLIN COUNTY','Neuse River','Roanoke River','NASH COUNTY','VIRGINIA','NORTH CAROLINA'];
+ const offsets={'Louisburg':[8,-24],'Franklinton':[-83,6],'Tar River':[6,-28],'Tarboro':[9,4],'Rocky Mount':[-85,-23],'FRANKLIN COUNTY':[-44,-16],'NASH COUNTY':[-32,5]};
+ for(const name of order){const l=m.labels.find(v=>v.name===name),el=[...root.querySelectorAll('.tar-label')].find(v=>v.dataset.name===name),dot=[...root.querySelectorAll('.tar-town-dots circle')].find(v=>v.dataset.name===name);if(!el)continue;
+  el.style.opacity=0;if(dot)dot.style.opacity=0;
+  if(l.kind==='county'&&c[2]>230)continue;
+  const [px,py]=project(l.point),ew=el.offsetWidth,eh=el.offsetHeight;
+  if(px<12||px>w-12||py<12||py>h-23)continue;
+  const positions=[offsets[name]||[8,-18],[8,6],[-ew-8,-eh-5],[-ew-8,7],[8,-eh-6],[-ew/2,-eh-12]];
+  for(const [dx,dy] of positions){const r={x:px+dx,y:py+dy,w:ew,h:eh};if(r.x<8||r.x+ew>w-8||r.y<8||r.y+eh>h-12||occupied.some(o=>r.x<o.x+o.w+5&&r.x+r.w+5>o.x&&r.y<o.y+o.h+4&&r.y+r.h+4>o.y))continue;
+   el.style.left=r.x+'px';el.style.top=r.y+'px';el.style.opacity=1;occupied.push(r);if(dot){dot.setAttribute('cx',px);dot.setAttribute('cy',py);dot.style.opacity=1;}break;
+  }
+ }
+ const km=c[2]>230?80.4672:32.18688;root.querySelector('.tar-scale i').style.width=km*scale+'px';root.querySelector('.tar-scale span').textContent=c[2]>230?'50 miles':'20 miles';
+ const rect=root.querySelector('.tar-inset rect');rect.setAttribute('x',-x/scale);rect.setAttribute('y',-y/scale);rect.setAttribute('width',w/scale);rect.setAttribute('height',h/scale);
+ const wide=root.querySelector('[data-tar-action=wide]');wide.textContent=tarWide?'River view':'Wider view';wide.setAttribute('aria-pressed',tarWide);root.querySelector('[data-tar-action=replay]').hidden=reduced.matches;
+}
+$('graphic-stage').addEventListener('click',e=>{
+ const action=e.target.closest('[data-tar-action]')?.dataset.tarAction;if(!action)return;
+ const root=$('graphic-stage').querySelector('.tar-atlas'),m=data.tarRiverMap,from=root.dataset.camera.split(',').map(Number);cancelAnimationFrame(tarMotionFrame);
+ if(action==='wide')tarWide=!tarWide;else tarWide=false;
+ const begin=action==='replay'?m.frames.region:from,to=tarWide?m.frames.region:m.frames.river,start=performance.now(),duration=action==='replay'?4600:850;
+ const tick=now=>{if(document.body.dataset.visual!=='river-home'){tarMotionFrame=0;tarOverride=null;return;}const t=reduced.matches?1:clamp((now-start)/duration);tarOverride=begin.map((v,i)=>mix(v,to[i],smooth(t)));paintTarMap(tarProgress);tarMotionFrame=t<1?requestAnimationFrame(tick):0;};
+ tarMotionFrame=requestAnimationFrame(tick);
+});
+
 function graphicHTML(s){
- if(s.visual==='river-home'){const r=s.riverHome;return `<div class="inheritance-heading"><small>${esc(s.year)}</small><h3>${esc(r.family)}</h3><p>${esc(r.place)}</p></div><svg class="river-home-diagram" viewBox="0 0 600 340" role="img" aria-label="Diagram of inheritance: Julius and Lucy’s plantation, on both banks of the Tar River, left to their son Jacob"><defs><pattern id="bank-hatch" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(25)"><path d="M0 0V9" stroke="#9f9577" stroke-width="1" opacity=".35"/></pattern></defs><path class="inheritance-bank" d="M75 55Q150 40 256 65L290 202Q170 240 75 215Z M323 68Q435 40 523 65L523 218Q431 233 352 205Z"/><path class="river-home-bank" d="M278 5C240 65 343 91 306 155S272 229 332 270"/><path class="river-home-water" d="M278 5C240 65 343 91 306 155S272 229 332 270"/><path class="river-home-flow" d="M278 5C240 65 343 91 306 155S272 229 332 270"/><text class="river-home-river" x="357" y="152">${esc(r.river)}</text><text class="inheritance-bank-label" x="74" y="302">${esc(r.bankLabel)}</text></svg><div class="inheritance-heir"><small>${esc(r.transferLabel)}</small><span>${esc(r.inheritance)}</span></div><p class="graphic-note">${esc(r.note)}</p>`;}
+ if(s.visual==='river-home')return tarMapHTML(s);
  if(s.visual==='timeline'){
   const big=s.careerYears?`<div class="career-total"><strong>${s.careerYears}</strong><span>${esc(s.careerLabel)}<small>${esc(s.careerNote)}</small></span></div>`:'';
   return `${s.graphicTitle?`<p class="graphic-overline">${esc(s.graphicTitle)}</p>`:''}${big}<div class="milestones ${s.childCounts?'with-children':''}">${s.milestones.map((m,i)=>`<div><time>${esc(m[0])}</time><span class="milestone-dot" aria-hidden="true"></span><section><h3>${esc(m[1])}</h3>${s.childCounts?`<div class="child-dots" aria-label="${s.childCounts[i]} children">${Array.from({length:s.childCounts[i]},()=>'<i aria-hidden="true"></i>').join('')}</div>`:''}<p>${esc(m[2])}</p></section></div>`).join('')}</div>`;
@@ -194,7 +237,7 @@ function draw(){
   document.body.dataset.visual=shown.visual;
   const context=$('geographic-context').children;context[0].textContent=shown.mapHeading||'WASHINGTON PARISH';context[1].textContent=shown.mapPlace||'Louisiana · Bogue Chitto River';
  }
- revealGraphic(shown,shown===a?segment:0);
+ revealGraphic(shown,shown.id===settledScene?1:shown===a?segment:0);
  const riverActive=riverAtlas.update(a.id,a.id===settledScene?1:segment);
  document.body.dataset.riverAtlas=riverActive?'active':'inactive';
  $('progress-fill').style.transform=`scaleX(${clamp(scrollY/(document.documentElement.scrollHeight-innerHeight))})`;

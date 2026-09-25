@@ -261,3 +261,42 @@ html{scrollbar-gutter:stable}#family-stage{pointer-events:auto}.person-link{font
 @media(max-width:360px){.graphic-stage[data-kind=lineage] .graphic-composition{transform:scale(.85)}}
 
 @media(max-width:700px){body[data-scene=beginning] #geographic-context,body[data-scene=seaborn-death] #geographic-context{visibility:hidden}}
+
+/* Tar River: real geographic shapes, readable labels, and a scroll-driven camera. */
+#graphic-stage[data-kind=river-home]{left:43%;right:3%;top:154px;bottom:22px;z-index:6}
+#graphic-stage[data-kind=river-home] .graphic-composition{height:100%;width:100%;margin:0;transform:none}
+.tar-atlas{height:100%;display:flex;flex-direction:column;overflow:clip;border:1px solid #aeb4a0;background:#eeecdf;box-shadow:0 15px 50px #2b493313}
+.tar-atlas header{padding:20px 24px 12px;flex:none;background:linear-gradient(#f5f1e7,#f5f1e700)}
+.tar-atlas header small{font:10px var(--sans);letter-spacing:.14em;color:#7a795d}
+.tar-atlas h3{font:normal clamp(25px,2.4vw,36px)/1.12 var(--serif);letter-spacing:-.025em;margin:7px 0}
+.tar-atlas header p{font:12px var(--sans);color:#53664f;margin:0}
+.tar-map-canvas{position:relative;flex:1;min-height:0;overflow:clip;background:#e5e8de}
+.tar-map{position:absolute;inset:0;width:100%;height:100%}
+.tar-map path{stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.tar-state{fill:#e8e8da;stroke:#9a9d86;stroke-width:1.3}
+.tar-county{fill:#dae0cb50;stroke:#84927780;stroke-width:.75;stroke-dasharray:2 3}
+.tar-county:nth-child(even){fill:#eee4ce50}.tar-county.is-franklin{fill:#c7bd9252;stroke:#8b8c62;stroke-width:1.1}
+.tar-water-wash{fill:none;stroke:#93b4b373;stroke-width:5}.tar-water-ink{fill:none;stroke:#789da5;stroke-width:1}
+.is-tar .tar-water-wash{stroke:#85b1b16b;stroke-width:9}.is-tar .tar-water-ink{stroke:#397e8a;stroke-width:2}
+.tar-town-dots circle{fill:#f9f4e4;stroke:#53684d;stroke-width:1.4}
+.tar-map-labels{position:absolute;inset:0;pointer-events:none}.tar-label{position:absolute;width:max-content;max-width:155px;opacity:0;color:#344e3c;text-shadow:0 0 4px #eeeee2,0 0 4px #eeeee2;font:12px var(--sans)}
+.tar-label[data-name=Louisburg]{font-weight:650}.tar-label-river{font:italic 18px var(--serif);color:#3c7c89}.tar-label-county{font:9px var(--sans);letter-spacing:.12em;color:#7a785d}.tar-label-state{font:10px var(--sans);letter-spacing:.13em;color:#6e7b61}
+.tar-north{position:absolute;top:14px;right:18px;text-align:center;font:10px var(--sans);color:#54664f}.tar-north>span{display:block;font:24px var(--serif);line-height:1.3}
+.tar-scale{position:absolute;bottom:14px;left:18px;font:10px var(--sans);color:#53634d;display:grid;gap:5px}.tar-scale i{display:block;height:5px;border:solid #66745b;border-width:0 1px 1px}
+.tar-inset{position:absolute;right:12px;bottom:12px;width:102px;height:79px;background:#f8f4e9e8;border:1px solid #a5ad94;box-shadow:0 3px 10px #3552330c}.tar-inset svg{width:100%;height:100%}.tar-inset path{fill:#d6ddc9;stroke:#819370;stroke-width:5}.tar-inset .inset-nc{fill:#e6d7b3}.tar-inset rect{fill:#b6874330;stroke:#977240;stroke-width:7}.tar-inset text{font:68px var(--sans);fill:#5b7057}
+.tar-atlas footer{flex:none;padding:14px 24px 12px;border-top:1px solid #acb19b;background:#f5f1e7}
+.tar-inheritance{font:17px/1.45 var(--serif);color:#345442;margin:0 0 5px;max-width:460px}
+.tar-actions{display:flex;gap:19px;align-items:center}.tar-actions button{font:11px var(--sans);padding:9px 0;min-height:36px;text-decoration:underline;text-underline-offset:4px;text-decoration-color:#899c7980}.tar-actions button:hover{color:#916d32}
+.tar-note{font:10px/1.4 var(--sans);color:#67745c;margin:3px 0 0}
+body[data-visual=river-home] .landscape{overflow:clip}
+@media(min-width:701px){#north-carolina{min-height:170svh}}
+@media(max-width:700px){
+ #graphic-stage[data-kind=river-home]{left:0;right:0;top:129px;bottom:auto;height:min(57svh,485px)}
+ .tar-atlas{border-inline:0;box-shadow:none}.tar-atlas header{padding:11px 18px 8px}.tar-atlas header small{font-size:8px;letter-spacing:.1em}.tar-atlas h3{font-size:25px;margin:4px 0}.tar-atlas header p{font-size:11px}
+ .tar-atlas footer{padding:9px 17px 8px}.tar-inheritance{font-size:14px;line-height:1.3;margin-bottom:2px}.tar-actions{gap:15px}.tar-actions button{font-size:10px;padding:7px 0;min-height:32px}.tar-note{font-size:8px;margin-top:1px}
+ .tar-label{font-size:10px}.tar-label-river{font-size:15px}.tar-label-county{font-size:7px;letter-spacing:.05em}.tar-label-state{font-size:8px}
+ .tar-inset{width:68px;height:53px;right:9px;bottom:10px}.tar-scale{font-size:8px;left:14px;bottom:13px}.tar-north{font-size:8px;right:12px;top:9px}.tar-north>span{font-size:20px}
+ #north-carolina{padding-top:calc(min(57svh,485px) + 25px);min-height:190svh}
+}
+@media(max-height:640px) and (min-width:701px){#graphic-stage[data-kind=river-home]{top:136px;bottom:10px}.tar-atlas header{padding:9px 17px}.tar-atlas h3{font-size:25px}.tar-atlas footer{padding:8px 17px}.tar-note{font-size:9px}.tar-inheritance{font-size:14px}}
+@media(prefers-reduced-motion:reduce){[data-tar-action=replay]{display:none!important}}
