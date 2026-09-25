@@ -1,4 +1,4 @@
-/* Read-only pedigree: only reviewed parent/spouse edges enter the diagram. */
+/* Read-only pedigree: reviewed relationships; probable links remain visibly qualified. */
 (() => {
 'use strict';
 const E = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -15,6 +15,7 @@ window.AlfordTree = class {
   this.orientation = 'vertical';
   this.generations = this.mobile ? 2 : 4;
   this.showSpouses = !this.mobile;
+  this.showLikely = true;
   this.expanded = new Set();
   this.shown = new Set();
   this.highlight = new Set();
@@ -23,14 +24,15 @@ window.AlfordTree = class {
   this.renderShell(); this.reset(); this.bind();
  }
  adjacent(id, kind) {
-  return this.edges.filter(e => kind === 'parents' ? e.kind === 'parent' && e.to === id : kind === 'children' ? e.kind === 'parent' && e.from === id : kind === 'spouses' ? e.kind === 'spouse' && [e.from,e.to].includes(id) : [e.from,e.to].includes(id)).map(e => e.from === id ? e.to : e.from);
+  return this.edges.filter(e => this.showLikely || e.certainty !== 'likely').filter(e => kind === 'parents' ? e.kind === 'parent' && e.to === id : kind === 'children' ? e.kind === 'parent' && e.from === id : kind === 'spouses' ? e.kind === 'spouse' && [e.from,e.to].includes(id) : [e.from,e.to].includes(id)).map(e => e.from === id ? e.to : e.from);
  }
  renderShell() {
   this.root.innerHTML = `<div class="pedigree-toolbar">
    <label class="pedigree-person-picker"><span>Person</span><select id="tree-focus" aria-label="Starting person">${this.data.people.map(p => `<option value="${p.id}">${E(p.name)}</option>`).join('')}</select></label>
    <div class="pedigree-view-switch" role="group" aria-label="Tree layout"><button data-tree="vertical" aria-pressed="true">↑ Vertical</button><button data-tree="horizontal" aria-pressed="false">→ Horizontal</button></div>
-   <label class="pedigree-generation-picker"><span>Generations</span><select id="tree-generations">${[2,3,4,5].map(n => `<option value="${n}">${n}</option>`).join('')}</select></label>
+   <label class="pedigree-generation-picker"><span>Generations</span><select id="tree-generations">${[2,3,4,5,6,7].map(n => `<option value="${n}">${n}</option>`).join('')}</select></label>
    <label class="pedigree-spouse-toggle"><input type="checkbox" id="tree-spouses"> Spouse</label>
+   <label class="pedigree-spouse-toggle"><input type="checkbox" id="tree-likely" checked> Likely links</label>
    <button data-tree="home" class="pedigree-home">Christine’s tree</button>
   </div>
   <div class="pedigree-stage">
@@ -40,6 +42,7 @@ window.AlfordTree = class {
    <aside class="tree-details" aria-label="Person details" hidden></aside>
   </div>
   <div class="pedigree-footer"><p id="tree-help">Ancestors branch above the starting person. Use the arrows to open or close a branch. Drag to move; scroll or pinch to zoom.</p><span class="pedigree-count" aria-live="polite"></span></div>
+  <p class="pedigree-legend"><span aria-hidden="true"></span>Dashed gold line: likely relationship</p>
   <p class="tree-path" aria-live="polite" hidden></p>
   <details class="accessible-tree"><summary>Relationships & source notes</summary><p class="small">Lines show the relationships included in this collection. Their supporting records and qualifications appear below. Missing branches mean no parent is recorded here.</p><ul></ul></details>`;
   this.viewport = this.root.querySelector('.tree-viewport');
@@ -65,11 +68,12 @@ window.AlfordTree = class {
   this.focus = id; this.reset();
  }
  snapshot() {
-  return {focus:this.focus, selected:this.selected, orientation:this.orientation, generations:this.generations, showSpouses:this.showSpouses, expanded:[...this.expanded], highlight:[...this.highlight], z:this.z, x:this.x, y:this.y, detailsOpen:!this.panel.hidden,fullScreen:this.root.classList.contains('tree-expanded')};
+  return {focus:this.focus, selected:this.selected, orientation:this.orientation, generations:this.generations, showSpouses:this.showSpouses, showLikely:this.showLikely, expanded:[...this.expanded], highlight:[...this.highlight], z:this.z, x:this.x, y:this.y, detailsOpen:!this.panel.hidden,fullScreen:this.root.classList.contains('tree-expanded')};
  }
  restore(state) {
   if (!state?.focus || !this.people[state.focus]) return;
   for (const key of ['focus','selected','orientation','generations','showSpouses']) this[key] = state[key];
+  this.showLikely = state.showLikely !== false;
   this.expanded = new Set(state.expanded); this.highlight = new Set(state.highlight);
   this.root.classList.toggle('tree-expanded',!!state.fullScreen);document.body.classList.toggle('tree-fullscreen',!!state.fullScreen);
   this.draw(); this.z = state.z; this.x = state.x; this.y = state.y; this.transform();
@@ -116,23 +120,30 @@ window.AlfordTree = class {
   const vertical = this.orientation==='vertical';
   this.root.dataset.orientation = this.orientation;
   const path = (d,cls='') => `<path class="${cls}" d="${d}"/>`;
-  let lines = '';
+  let lines = '', connectionLabels = '';
+  const likelyEdge=(parent,child)=>this.edges.some(e=>e.kind==='parent'&&e.from===parent&&e.to===child&&e.certainty==='likely');
   for (const c of this.connectors) {
    const child=c.child, parents=c.parentIds.map(id=>this.positions[id]);
    const active=this.highlight.has(child.id)&&parents.some(p=>this.highlight.has(p.id));
+   const allLikely=parents.every(p=>likelyEdge(p.id,child.id));
+   const lineClass=(p)=>[active&&(p?this.highlight.has(p.id):true)?'highlight':'',(p?likelyEdge(p.id,child.id):allLikely)?'likely':''].filter(Boolean).join(' ');
+   for(const p of parents.filter(p=>likelyEdge(p.id,child.id))){
+    const lx=vertical?p.x+this.cardW/2+15:child.x+this.cardW+8, ly=vertical?p.y+this.cardH+13:child.y+this.cardH/2-35;
+    connectionLabels+=`<span class="pedigree-likely-label" style="left:${lx}px;top:${ly}px">Likely</span>`;
+   }
    if (vertical) {
     const x=child.x+this.cardW/2, y=child.y, joint=y-38;
-    lines+=path(`M${x},${y}V${joint}`,active?'highlight':'');
-    for (const p of parents) lines+=path(`M${p.x+this.cardW/2},${p.y+this.cardH}V${joint}H${x}`,this.highlight.has(p.id)&&active?'highlight':'');
+    lines+=path(`M${x},${y}V${joint}`,lineClass());
+    for (const p of parents) lines+=path(`M${p.x+this.cardW/2},${p.y+this.cardH}V${joint}H${x}`,lineClass(p));
    } else {
     const x=child.x+this.cardW,y=child.y+this.cardH/2,joint=x+34;
-    lines+=path(`M${x},${y}H${joint}`,active?'highlight':'');
-    for (const p of parents) lines+=path(`M${p.x},${p.y+this.cardH/2}H${joint}V${y}`,this.highlight.has(p.id)&&active?'highlight':'');
+    lines+=path(`M${x},${y}H${joint}`,lineClass());
+    for (const p of parents) lines+=path(`M${p.x},${p.y+this.cardH/2}H${joint}V${y}`,lineClass(p));
    }
   }
   const rootNode=this.positions[this.focus];
   for (const n of this.nodes.filter(n=>n.spouse)) lines+=path(vertical?`M${rootNode.x+this.cardW},${rootNode.y+this.cardH/2}H${n.x}`:`M${rootNode.x+this.cardW/2},${rootNode.y+this.cardH}V${n.y}`,'spouse');
-  this.world.innerHTML=`<svg class="tree-lines" width="${this.width}" height="${this.height}" aria-hidden="true">${lines}</svg>`+this.nodes.map(n=>{
+  this.world.innerHTML=`<svg class="tree-lines" width="${this.width}" height="${this.height}" aria-hidden="true">${lines}</svg>${connectionLabels}`+this.nodes.map(n=>{
    const p=this.people[n.id], parents=this.adjacent(n.id,'parents'), expanded=this.expanded.has(n.id);
    const title=p.graphicName||p.name;
    return `<div class="pedigree-card${n.id===this.focus?' is-focus':''}${n.spouse?' is-spouse':''}" style="left:${n.x}px;top:${n.y}px">
@@ -146,6 +157,7 @@ window.AlfordTree = class {
   this.root.querySelector('#tree-focus').value=this.focus;
   this.root.querySelector('#tree-generations').value=this.generations;
   this.root.querySelector('#tree-spouses').checked=this.showSpouses;
+  this.root.querySelector('#tree-likely').checked=this.showLikely;
   this.root.querySelectorAll('[data-tree="vertical"],[data-tree="horizontal"]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.tree===this.orientation));
   this.root.querySelector('.pedigree-count').textContent=`${this.shown.size} people shown`;
   this.root.querySelector('.pedigree-focus-caption').textContent=`Ancestors of ${this.people[this.focus].name}`;
@@ -161,9 +173,9 @@ window.AlfordTree = class {
   const p=this.people[this.selected];
   const groups=[['parents','Parents'],['spouses','Spouses'],['children','Children']];
   const relations=this.edges.filter(e=>[e.from,e.to].includes(p.id));
-  this.panel.innerHTML=`<button class="pedigree-panel-close" data-tree="close-details" aria-label="Close person details">×</button><p class="eyebrow">${E(p.relationship)}</p><h2>${E(p.name)}</h2><p>${E(p.dates)}</p><div class="pedigree-person-actions"><a class="action-link primary" href="#person/${p.id}">Profile ↗</a><button class="action-link" data-root="${p.id}">View their tree</button></div>
-   ${groups.map(([kind,label])=>{const ids=this.adjacent(p.id,kind);return ids.length?`<section class="pedigree-relatives"><h3>${label}</h3>${ids.map(id=>`<button data-relative="${id}">${E(this.people[id].graphicName||this.people[id].name)} <span>→</span></button>`).join('')}</section>`:'';}).join('')}
-   ${!this.adjacent(p.id,'parents').length?'<p class="small">No parents are recorded for this person in this collection.</p>':''}
+  this.panel.innerHTML=`<button class="pedigree-panel-close" data-tree="close-details" aria-label="Close person details">×</button><p class="eyebrow">${E(p.relationship)}</p><h2>${E(p.name)}</h2><p>${E(p.dates)}</p>${p.dateNote?`<p class="pedigree-date-note">${E(p.dateNote)}</p>`:''}<div class="pedigree-person-actions"><a class="action-link primary" href="#person/${p.id}">Profile ↗</a><button class="action-link" data-root="${p.id}">View their tree</button></div>
+   ${groups.map(([kind,label])=>{const ids=this.adjacent(p.id,kind);return ids.length?`<section class="pedigree-relatives"><h3>${label}</h3>${ids.map(id=>`<button data-relative="${id}">${E(this.people[id].graphicName||this.people[id].name)} ${this.edges.some(e=>e.certainty==='likely'&&[e.from,e.to].includes(id)&&[e.from,e.to].includes(p.id))?'<small class="likely-badge">Likely</small>':''}<span>→</span></button>`).join('')}</section>`:'';}).join('')}
+   ${!this.adjacent(p.id,'parents').length?`<p class="small">${relations.some(e=>e.kind==='parent'&&e.to===p.id)?'Turn on Likely links to see the earlier family.':'No parents are recorded for this person in this collection.'}</p>`:''}
    <button class="pedigree-connection" data-tree="connection">Connection to Christine ↗</button>
    <div class="pedigree-connection-result" role="status"></div><details class="pedigree-evidence"><summary>Relationship sources</summary>${relations.map(e=>`<p><strong>${E(e.label)}</strong><br>${E(e.qualification)}<br>${e.records.map(k=>`<a href="#record/${k}">Read the record ↗</a>`).join(' · ')}</p>`).join('')||'<p>No connecting relationship is established.</p>'}</details>`;
   this.panel.hidden=false;
@@ -200,7 +212,8 @@ window.AlfordTree = class {
   while(q.length){const p=q.shift(),last=p.at(-1);if(last==='christine'){found=p;break;}for(const id of this.adjacent(last))if(!seen.has(id)){seen.add(id);q.push([...p,id]);}}
   const box=this.root.querySelector('.tree-path');box.hidden=false;
   if(!found){box.textContent='No established connecting path to Christine in this collection. The person’s profile explains any proposed association.';this.panel.querySelector('.pedigree-connection-result').textContent=box.textContent;return;}
-  box.innerHTML='<strong>Connection to Christine</strong><br>'+found.map(id=>`<a href="#person/${id}">${E(this.people[id].name)}</a>`).join(' → ');
+  const hasLikely=found.some((id,i)=>i&&this.edges.some(e=>e.certainty==='likely'&&[e.from,e.to].includes(id)&&[e.from,e.to].includes(found[i-1])));
+  box.innerHTML='<strong>Connection to Christine'+(hasLikely?' · includes a likely link':'')+'</strong><br>'+found.map(id=>`<a href="#person/${id}">${E(this.people[id].name)}</a>`).join(' → ');
   this.panel.querySelector('.pedigree-connection-result').innerHTML=box.innerHTML;this.highlight=new Set(found);this.draw();
  }
  resize() {this.mobile=matchMedia('(max-width:600px)').matches;this.draw();this.fit();}
@@ -221,6 +234,7 @@ window.AlfordTree = class {
   });
   this.root.querySelector('#tree-focus').addEventListener('change',e=>this.setFocus(e.target.value));
   this.root.querySelector('#tree-generations').addEventListener('change',e=>{this.generations=Number(e.target.value);this.reset();});
+  this.root.querySelector('#tree-likely').addEventListener('change',e=>{this.showLikely=e.target.checked;this.highlight.clear();this.root.querySelector('.tree-path').hidden=true;this.draw();this.fit();if(!this.panel.hidden)this.details();});
   this.root.querySelector('#tree-spouses').addEventListener('change',e=>{this.showSpouses=e.target.checked;this.draw();this.fit();});
   this.viewport.addEventListener('wheel',e=>{e.preventDefault();const r=this.viewport.getBoundingClientRect();this.zoom(Math.exp(-Math.max(-200,Math.min(200,e.deltaY))*.003),{x:e.clientX-r.left,y:e.clientY-r.top});},{passive:false});
   this.viewport.addEventListener('pointerdown',e=>{

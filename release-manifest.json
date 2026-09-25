@@ -201,24 +201,24 @@
       "sha256": "d3aaba9d000d97dbc97a7b081562172d18065d18c68da30731de022e699d84b2"
     },
     "explore-data.js": {
-      "bytes": 55471,
-      "sha256": "4a4518a2b82215d78391c3fdff26cc45e25a98423790d38ee72bd9be757b4481"
+      "bytes": 56539,
+      "sha256": "c06d3ae7430dea69daaac7beacd33a491f310c5540c93ec66bd92c6437e9c99d"
     },
     "explore-reading.html": {
-      "bytes": 49954,
-      "sha256": "d9fb4e642157f7e8370919f7e3a5e24132afcba1d839ab5311c0f47e58502107"
+      "bytes": 51062,
+      "sha256": "7541af0204c568fdb39c60bb54b29d5e09119619acf3aa08f8e8387d515038a0"
     },
     "explore.css": {
-      "bytes": 23580,
-      "sha256": "9101be14f4f2f208b7272517fa5f6cca5a60b9e4ecdb1782e97d56b4c669e017"
+      "bytes": 24422,
+      "sha256": "159450918404099db486669fd472abc5109890a8e4712eb607a80cafb67f8aed"
     },
     "explore.html": {
       "bytes": 3525,
       "sha256": "4bd51fea3307d2b7240fdfb7ce367e501e2e8180cf95789cea795351ae3a5dac"
     },
     "explore.js": {
-      "bytes": 22515,
-      "sha256": "beb3912846ab67dae399d01121439740e2b322edf3dd25126ef6335e0b9e9ec2"
+      "bytes": 22567,
+      "sha256": "15c7e6ef9ad4462a4eb6a6de8e22aeb8708b6574241f345867a43b2ea56acc9c"
     },
     "index.html": {
       "bytes": 520116,
@@ -237,8 +237,8 @@
       "sha256": "fba5c969dda0e31f1702c099330f777b730ec80f5f52c4d0a2cd225e0675a76c"
     },
     "tree-engine.js": {
-      "bytes": 21020,
-      "sha256": "3d64e56fea15839b1643656437b03798deff6a8fc2fa63831abd22a9b0b8679b"
+      "bytes": 22843,
+      "sha256": "cec3da1650c93aaac3e8b27c5987cd8ca849b96ba54c3ceac703ebc9d165c7ce"
     },
     "walk-data.js": {
       "bytes": 233801,
@@ -257,6 +257,6 @@
       "sha256": "bec8253073ed04a247b19ed17e084150fe9c05658da75cd61e9fd104cdf84d19"
     }
   },
-  "bytes": 40295321,
-  "reviewSha256": "09640cd43e8c655f7b5f45a5f8f13def0c403304280719980f9b294e78eb8d6c"
+  "bytes": 40300214,
+  "reviewSha256": "77c72faf11da534311d01b46e0d47da892766c951b5e46ce3e23959a3fcae972"
 }
