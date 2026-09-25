@@ -201,12 +201,12 @@
       "sha256": "d3aaba9d000d97dbc97a7b081562172d18065d18c68da30731de022e699d84b2"
     },
     "explore-data.js": {
-      "bytes": 56539,
-      "sha256": "c06d3ae7430dea69daaac7beacd33a491f310c5540c93ec66bd92c6437e9c99d"
+      "bytes": 53591,
+      "sha256": "244e29fff5f5f32cbe58bb1b50764182d8f2045387edc202df5a72e2e06c5bd8"
     },
     "explore-reading.html": {
-      "bytes": 51062,
-      "sha256": "7541af0204c568fdb39c60bb54b29d5e09119619acf3aa08f8e8387d515038a0"
+      "bytes": 47991,
+      "sha256": "c3e9ba4e03cb9fc7232d2a41e34c1ded4ed7754cbdcbf25d66da1e1fc71c5421"
     },
     "explore.css": {
       "bytes": 24422,
@@ -221,8 +221,8 @@
       "sha256": "15c7e6ef9ad4462a4eb6a6de8e22aeb8708b6574241f345867a43b2ea56acc9c"
     },
     "index.html": {
-      "bytes": 520310,
-      "sha256": "4a92306431f4527214b9d783794b233de3e18d9c644c95b2f00452ee63af2330"
+      "bytes": 520222,
+      "sha256": "5b2e2aeea269fcbc53d7c593ce6dda998fdc10e547ed467b06339e5a20cd47e4"
     },
     "reading.css": {
       "bytes": 1753,
@@ -241,16 +241,16 @@
       "sha256": "d4e85d4daba153b91506225685c5133210cbf95ea92bfe7dd3c4bf763253a8d9"
     },
     "story.html": {
-      "bytes": 106330,
-      "sha256": "fba5c969dda0e31f1702c099330f777b730ec80f5f52c4d0a2cd225e0675a76c"
+      "bytes": 101720,
+      "sha256": "3031246afc0011f8a846faa743649a516005dd21c15e70888e2c462c9b6210fa"
     },
     "tree-engine.js": {
       "bytes": 22843,
       "sha256": "cec3da1650c93aaac3e8b27c5987cd8ca849b96ba54c3ceac703ebc9d165c7ce"
     },
     "walk-data.js": {
-      "bytes": 235892,
-      "sha256": "d3c2bbdbdd363346d3aa25db332b900be2251c67bdf10b717b1575aa238e68b6"
+      "bytes": 226633,
+      "sha256": "49e0ad1e58c2d211fa5fae055374629b52c4d910ee185acc70b2d927c7e4f55d"
     },
     "walk-map.js": {
       "bytes": 14428,
@@ -265,6 +265,6 @@
       "sha256": "7ca4fbafa07dbb9a22fddbb93666835e96ca0fa3054626851906cecd5df41cca"
     }
   },
-  "bytes": 40325080,
-  "reviewSha256": "801ce5c8c6780f340d3fd1f496ed78e5f0f0de18c7e45ddbcf43f4bfea2c945b"
+  "bytes": 40305104,
+  "reviewSha256": "7597f71c98757432d2744297bce902bd6410a2ed5181aea5cea29576bd3ba6d4"
 }
