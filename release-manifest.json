@@ -221,8 +221,8 @@
       "sha256": "15c7e6ef9ad4462a4eb6a6de8e22aeb8708b6574241f345867a43b2ea56acc9c"
     },
     "index.html": {
-      "bytes": 520231,
-      "sha256": "e0e4c17aa12b3064f851e5be91593d36e995c71a38002bf197c91872478f1cd3"
+      "bytes": 520945,
+      "sha256": "fbfd072e39a431333524aeda54096c63562b86c4594eb9a67ff71f7440baf0bf"
     },
     "reading.css": {
       "bytes": 1753,
@@ -233,12 +233,12 @@
       "sha256": "ce2bffad2e8b11682e213232394d2414fc3d6fb67ed4c5641cf161940a6b896f"
     },
     "river-atlas.css": {
-      "bytes": 8559,
-      "sha256": "a9c35e8a019822bd75c51140efb9cc53a1367388ee63bdc3bf0673f6b00f12ff"
+      "bytes": 9644,
+      "sha256": "2622ddecb2e3493c126d31dff68e7d45932d3fb1e2157480d56bf07e3be06555"
     },
     "river-atlas.js": {
-      "bytes": 11970,
-      "sha256": "d4e85d4daba153b91506225685c5133210cbf95ea92bfe7dd3c4bf763253a8d9"
+      "bytes": 14398,
+      "sha256": "3f3c2b5cdacae92ec649601ea5fc3b4a499a6431f6bd06cca6f832ca9a105db4"
     },
     "story.html": {
       "bytes": 101729,
@@ -249,12 +249,12 @@
       "sha256": "cec3da1650c93aaac3e8b27c5987cd8ca849b96ba54c3ceac703ebc9d165c7ce"
     },
     "walk-data.js": {
-      "bytes": 226651,
-      "sha256": "ad2e29a14297708472afa40b69d0b9fdfd50bbcc177151d440bbd8f41d666cd0"
+      "bytes": 229555,
+      "sha256": "0eac5e5e51fbf11cbf879b4a444bd5e5a7b7eb263d500a86082b3a4de2b17b14"
     },
     "walk-map.js": {
-      "bytes": 14428,
-      "sha256": "97d4099be5f0944c35cef23aced6c9edc87598e21cf3333536e734dd64f66248"
+      "bytes": 14624,
+      "sha256": "8befb64615f6756bc2536877f835241a05c7051eb43ceff26a34012e46355697"
     },
     "walk.css": {
       "bytes": 62383,
@@ -265,6 +265,6 @@
       "sha256": "7ca4fbafa07dbb9a22fddbb93666835e96ca0fa3054626851906cecd5df41cca"
     }
   },
-  "bytes": 40305140,
-  "reviewSha256": "24d27d7cdb8423bd64d5f083f3523d1f6b5a2da31034ad19aaae3f849303fb31"
+  "bytes": 40312467,
+  "reviewSha256": "df68e1cf02adc4345295d4a2e84117e0551d4d57639cf3fad25719ad6d2859b9"
 }
