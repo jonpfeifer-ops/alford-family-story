@@ -3,6 +3,8 @@
 'use strict';
 const $=id=>document.getElementById(id), data=window.ALFORD_WALK;
 const {scenes,people,records}=data;
+let settledScene=null;
+const sceneFor=id=>scenes.find(s=>s.id===id)||scenes.find(s=>data.structure.groups.find(g=>g.id===s.id)?.segments.some(v=>(typeof v==='string'?v:v.id)===id));
 const reduced=matchMedia('(prefers-reduced-motion: reduce)'), narrow=matchMedia('(max-width:700px)');
 const clamp=n=>Math.max(0,Math.min(1,n)),mix=(a,b,t)=>a+(b-a)*t,smooth=t=>t*t*(3-2*t);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -34,12 +36,12 @@ const beats=[...document.querySelectorAll('.beat')];
 let anchors=[],width=innerWidth,height=innerHeight,docWidth=0,docHeight=0,queued=false,active=-1,shownId='',frameState=null,lastSaved=0,saveEnabled=false;
 function measure(){
  width=$('landscape').clientWidth;height=$('landscape').clientHeight;
- anchors=beats.map((e,i)=>i===0?0:e.getBoundingClientRect().top+scrollY-height*.22);
+ anchors=beats.map((e,i)=>i===0?0:e.getBoundingClientRect().top+scrollY-(narrow.matches?140:145)-1);
  docWidth=$('document-stage').clientWidth;docHeight=$('document-stage').clientHeight;schedule();
 }
 function cameraFrame(c){const mobile=narrow.matches,w=width*(mobile?.83:.47),h=height*(mobile?.36:.68),scale=Math.min(w/c[2],h/c[3]);return {scale,x:width*(mobile?.49:.72)-c[0]*scale,y:height*(mobile?.30:.50)-c[1]*scale};}
 function imageTransform(roi){const scale=Math.min(docWidth/(roi[2]-roi[0]),docHeight/(roi[3]-roi[1]));return {scale,x:(docWidth-(roi[2]-roi[0])*scale)/2-roi[0]*scale,y:(docHeight-(roi[3]-roi[1])*scale)/2-roi[1]*scale};}
-function imageROI(s){const r=records[s.image];return s.roi||s.focus||r.transcript?.focus||[0,0,...r.dimensions];}
+function imageROI(s){const r=records[s.image];return s.roi||(Array.isArray(s.focus)?s.focus:null)||r.transcript?.focus||[0,0,...r.dimensions];}
 function imageLayer(slot,s,opacity,progress=0,to=null,t=0){
  const holder=$(`image-${slot}-window`),img=$(`image-${slot}`);holder.style.opacity=opacity;
  if(!s.image||opacity<=0)return;
@@ -119,13 +121,13 @@ function drawJourney(s,p){
 }
 function revealGraphic(s,p){
  const phase=reduced.matches?1:clamp(p/.65),elements=$('graphic-stage').querySelectorAll('.milestones>div,.household-card,.lineage-row,.census-adults>div');
- elements.forEach((el,i)=>{const n=clamp(phase*elements.length-i+.4);el.style.opacity=.25+.75*n;el.style.transform=`translateY(${(1-n)*16}px)`;});
- const blocks=$('graphic-stage').querySelectorAll('.farm-blocks i');blocks.forEach((el,i)=>{el.style.opacity=reduced.matches?1:clamp(phase*70-i);});
+ elements.forEach((el,i)=>{el.style.opacity=1;el.style.transform='none';});
+ const blocks=$('graphic-stage').querySelectorAll('.farm-blocks i');blocks.forEach(el=>{el.style.opacity=1;});
  for(const path of $('graphic-stage').querySelectorAll('.city-connection,.river-home-flow')){path.style.strokeDasharray=path.getTotalLength();path.style.strokeDashoffset=path.getTotalLength()*(1-phase);}
- for(const el of $('graphic-stage').querySelectorAll('.inheritance-heir,.child-dots i'))el.style.opacity=reduced.matches?1:clamp(phase*2-.15);
- const family=$('family-stage');if(s.family){family.querySelector('.family-child')?.style.setProperty('opacity',String(reduced.matches?1:clamp(p*3)));family.querySelector('.descent-line')?.style.setProperty('transform',`scaleY(${reduced.matches?1:clamp(p*3)})`);}
+ for(const el of $('graphic-stage').querySelectorAll('.inheritance-heir,.child-dots i'))el.style.opacity=1;
+ const family=$('family-stage');if(s.family){family.querySelector('.family-child')?.style.setProperty('opacity','1');family.querySelector('.descent-line')?.style.setProperty('transform','scaleY(1)');}
 }
-function personButton(k,cls=''){return `<button class="family-person ${cls}" data-person="${k}"><span>${esc(people[k].graphicName||people[k].name)}</span><small>${esc(people[k].dates)}</small></button>`;}
+function personButton(k,cls=''){return `<button class="family-person ${cls}" data-person="${k}" id="${cls.includes('line-person')||cls.includes('partner-person')?'lineage':'graphic'}-person-${k}"><span>${esc(people[k].graphicName||people[k].name)}</span><small>${esc(people[k].dates)}</small></button>`;}
 const generations=[['john','margaret'],['seaborn','laura'],['esco','mary-lou'],['christine']];
 function familyPosition(key){return generations.findIndex(row=>row.includes(key));}
 function familyTrail(key){const at=familyPosition(key);return `<div class="generation-trail" aria-label="Place in Christine’s family">${generations.map((r,i)=>`<span class="${i===at?'current':''}">${esc(people[r[0]].name.split(' ')[0])}</span>${i<3?'<i aria-hidden="true">→</i>':''}`).join('')}</div>`;}
@@ -151,9 +153,9 @@ function graphicHTML(s){
 }
 function draw(){
  queued=false;let i=0;while(i<anchors.length-1&&scrollY>=anchors[i+1])i++;
- const a=states[i],b=states[Math.min(i+1,states.length-1)],segment=anchors[i+1]===undefined?0:clamp((scrollY-anchors[i])/(anchors[i+1]-anchors[i]));
+ const a=states[i],b=states[Math.min(i+1,states.length-1)],segment=clamp((scrollY-anchors[i])/((anchors[i+1]??(anchors[i]+beats[i].offsetHeight))-anchors[i]));
  const t=reduced.matches?0:smooth(clamp((segment-.68)/.32)),val=k=>mix(a[k],b[k],t),shown=t>.5?b:a;
- const ca=directedCamera(a,segment),cb=directedCamera(b,0),cam={scale:mix(ca.scale,cb.scale,t),x:mix(ca.x,cb.x,t),y:mix(ca.y,cb.y,t)};
+ const ca=directedCamera(a,a.id===settledScene?1:segment),cb=directedCamera(b,0),cam={scale:mix(ca.scale,cb.scale,t),x:mix(ca.x,cb.x,t),y:mix(ca.y,cb.y,t)};
  world.setAttribute('transform',`translate(${cam.x},${cam.y}) scale(${cam.scale})`);$('land-map').style.opacity=val('map');grid.style.opacity=val('grid');
  for(const [id,el] of Object.entries(tractEls)){
   const opacity=val(id==='T-JA-54'?'jacob':id==='T-SLA-1881'?'seaborn':id==='T-JSA-1861'?'later':'john');el.style.opacity=opacity;
@@ -166,17 +168,17 @@ function draw(){
  [...$('map-key').children].forEach((el,k)=>el.style.display=val(['jacob','john','seaborn'][k])>.02?'flex':'none');
  $('scale-bar').style.width=(804.672*cam.scale)+'px';$('scale-text').textContent='½ mile';
  const same=a.image&&b.image&&records[a.image].image===records[b.image].image;
- imageLayer('a',a,same?1:(a.image?1-t:0),segment,same?b:null,same?t:0);imageLayer('b',b,!same&&b.image?t:0,0);
+ imageLayer('a',a,same?1:(a.image?1-t:0),a.id===settledScene?1:segment,same?b:null,same?t:0);imageLayer('b',b,!same&&b.image?t:0,0);
  $('document-stage').dataset.mode=shown.documentMode||'record';
  const imageOpacity=mix(a.image?1:0,b.image?1:0,t);$('document-stage').style.opacity=imageOpacity;
  const record=shown.image;const open=$('document-open');open.hidden=!record||imageOpacity<.45;
  $('document-stage').style.pointerEvents='none';open.style.pointerEvents=open.hidden?'none':'auto';
  $('document-focus-label').textContent=record?(shown.focusLabel||records[record].transcript?.excerpts[records[record].transcript?.storyExcerpt||0]?.label||''):'';
- if(record){open.dataset.source=record;open.setAttribute('aria-label',`Expand ${records[record].title} to zoom and pan`);$('document-caption').textContent=records[record].caption||records[record].title;}
+ if(record){open.dataset.source=record;open.setAttribute('aria-label',`Expand ${records[record].title} to zoom and pan`);open.querySelector('span').innerHTML=esc(data.structure.recordInvitations[record]||('Explore '+records[record].title))+' <b aria-hidden="true">↗</b>';$('document-caption').textContent=records[record].caption||records[record].title;}
  $('family-stage').style.opacity=val('familyVisible');$('graphic-stage').style.opacity=val('graphic');
  $('family-stage').inert=!shown.family;$('graphic-stage').inert=!shown.graphic;
  $('regional-stage').style.opacity=val('regional');$('regional-stage').inert=!shown.regional;
- if(shown.regional){drawJourney(shown,shown===a?segment:0);}
+ if(shown.regional){drawJourney(shown,shown.id===settledScene?1:shown===a?segment:0);}
  if(shownId!==shown.id){shownId=shown.id;
   if(shown.family)$('family-stage').innerHTML=familyHTML(shown);
   if(shown.graphic)$('graphic-stage').innerHTML='<div class="graphic-composition">'+graphicHTML(shown)+'</div>';
@@ -189,6 +191,11 @@ function draw(){
  revealGraphic(shown,shown===a?segment:0);
  $('progress-fill').style.transform=`scaleX(${clamp(scrollY/(document.documentElement.scrollHeight-innerHeight))})`;
  if(active!==i){active=i;$('current-year').textContent=a.year;document.querySelector('.header-place').textContent=a.place;document.body.dataset.scene=a.id;
+  $('family-orientation').hidden=a.id==='beginning';
+  const who={earlier:'Julius & Jacob · likely earlier ancestry',john:'John & Margaret · Christine’s great-grandparents',seaborn:'Seaborn & Laura · Christine’s grandparents',esco:'Esco & Mary Lou · Christine’s parents',christine:'Christine · the next generation'};
+  $('family-context').innerHTML=`<span class="family-desktop">${esc(who[a.focus]||'')}</span><span class="chapter-mobile">${a.chapter?'Chapter '+a.part+' · '+esc(data.chapters.find(c=>c.id===a.chapter).title):''}</span>`;
+  $('family-orientation').querySelectorAll('[data-person]').forEach(e=>{e.classList.toggle('current',e.dataset.person===a.focus);if(e.dataset.person===a.focus)e.setAttribute('aria-current','true');else e.removeAttribute('aria-current');});
+  document.querySelectorAll('.chapter-contents').forEach(d=>{if(d.dataset.chapter===a.chapter)d.open=true;});
   document.querySelectorAll('#contents-dialog nav a').forEach(el=>{if(el.hash==='#'+a.id)el.setAttribute('aria-current','location');else el.removeAttribute('aria-current');});
  }
  if(saveEnabled&&active>0&&performance.now()-lastSaved>1000&&!document.querySelector('dialog[open]')){lastSaved=performance.now();try{localStorage.setItem('alford-reading-place',JSON.stringify(storyPosition()));}catch{}}
@@ -201,7 +208,8 @@ const viewer=new ArchiveImageViewer({viewport:$('record-scroller'),image:$('sour
 let current=null,focusOrigin=null;
 history.scrollRestoration='manual';
 function storyPosition(){const i=Math.max(0,active),el=beats[i];return {id:el.id,offset:scrollY-(el.getBoundingClientRect().top+scrollY),y:scrollY};}
-function restore(pos){if(!pos)return;const el=$(pos.id);const y=el?el.getBoundingClientRect().top+scrollY+pos.offset:pos.y;scrollTo({top:y,behavior:'instant'});schedule();}
+function revealTarget(id){const el=$(id);for(let p=el;p;p=p.parentElement)if(p.tagName==='DETAILS')p.open=true;measure();return el;}
+function restore(pos){if(!pos)return;const el=revealTarget(pos.id);const y=el?el.getBoundingClientRect().top+scrollY+pos.offset:pos.y;scrollTo({top:y,behavior:'instant'});schedule();}
 function closeSurfaces(){for(const d of document.querySelectorAll('dialog[open]'))d.close();viewer.cancelGesture();document.body.classList.remove('dialog-open');}
 function showRoute(state){
  const prev=current;closeSurfaces();current=state;
@@ -214,10 +222,11 @@ function showRoute(state){
  if(state.kind==='person'){
   const p=people[state.key];if(!p)return;
   $('person-title').textContent=p.name;$('person-dates').textContent=p.dates;$('person-relationship').textContent=p.relationship;$('person-body').innerHTML=p.html;
-  $('person-records').innerHTML=p.records.map(k=>`<button class="preview-record" data-source="${k}" id="preview-record-${k}">${esc(records[k].title)}<span aria-hidden="true">↗</span></button>`).join('');
+  $('person-records').innerHTML=`<a class="profile-link explore-link" href="explore.html#person/${state.key}">Life, family & places ↗</a>`+p.records.map(k=>`<button class="preview-record" data-source="${k}" id="preview-record-${k}">${esc(records[k].title)}<span aria-hidden="true">↗</span></button>`).join('');
  }
  if(state.kind==='record'){
   const r=records[state.key];if(!r)return;
+  const chapter=sceneFor(state.story?.id)?.chapter;let keys=[...new Set(scenes.filter(s=>s.chapter===chapter).flatMap(s=>s.records))];if(!keys.includes(state.key))keys=Object.keys(records);const at=keys.indexOf(state.key);$('source-sequence').innerHTML=[at>0?`<button data-adjacent-record="${keys[at-1]}">← ${esc(records[keys[at-1]].title)}</button>`:'<span></span>',at<keys.length-1?`<button data-adjacent-record="${keys[at+1]}">${esc(records[keys[at+1]].title)} →</button>`:''].join('');
   $('source-date').textContent=r.caption||'RECORD & SOURCES';$('source-title').textContent=r.title;
   $('source-note').innerHTML=r.html+(r.url?`<p><a href="${esc(r.url)}" target="_blank" rel="noopener">Collection record ↗</a></p>`:'');
   $('source-citation').textContent=r.citation+' · Archive: '+r.refs;
@@ -254,13 +263,13 @@ function backOne(){if(current?.direct)returnToStory();else history.back();}
 function returnToStory(){if(current?.direct){const s=current.story;history.replaceState({kind:'story',story:s},'','#'+s.id);showRoute(history.state);}else if(current?.depth)history.go(-current.depth);}
 function goPassage(id,{smoothScroll=true}={}){
  stopPlayback();
- const target=$(id);if(!target)return;closeSurfaces();current=null;
- const story={id,offset:-77,y:target.getBoundingClientRect().top+scrollY-77};
+ const target=revealTarget(id);if(!target)return;closeSurfaces();current=null;settledScene=sceneFor(id)?.id;
+ const gap=innerWidth<=700?140:145;const story={id,offset:-gap,y:target.getBoundingClientRect().top+scrollY-gap};
  const state={kind:'story',story};history.pushState(state,'','#'+id);current=state;
  scrollTo({top:story.y,behavior:smoothScroll&&!reduced.matches?'smooth':'instant'});target.setAttribute('tabindex','-1');target.focus({preventScroll:true});
 }
 let playing=false,playFrame=0,playLast=0;
-function stopPlayback(){playing=false;cancelAnimationFrame(playFrame);$('play-walk').setAttribute('aria-pressed','false');$('play-walk').innerHTML='Play walk <span aria-hidden="true">▷</span>';}
+function stopPlayback(){playing=false;cancelAnimationFrame(playFrame);$('play-walk').setAttribute('aria-pressed','false');$('play-walk').innerHTML='Play <span aria-hidden="true">▷</span>';}
 function playTick(now){if(!playing)return;const delta=Math.min(50,now-playLast);playLast=now;scrollBy({top:delta*.045,behavior:'instant'});if(scrollY>=document.documentElement.scrollHeight-innerHeight-2){stopPlayback();return;}playFrame=requestAnimationFrame(playTick);}
 $('play-walk').hidden=reduced.matches;
 $('play-walk').addEventListener('click',()=>{if(playing){stopPlayback();return;}playing=true;playLast=performance.now();$('play-walk').setAttribute('aria-pressed','true');$('play-walk').innerHTML='Pause <span aria-hidden="true">Ⅱ</span>';playFrame=requestAnimationFrame(playTick);});
@@ -272,7 +281,10 @@ $('contents-button').addEventListener('click',e=>openDetail('contents',null,e.cu
 $('back-preview').addEventListener('click',backOne);
 document.addEventListener('click',e=>{
  if(e.target.closest('#transcript-focus')){const region=records[current?.key]?.transcript?.focus;if(region){viewer.focusRegion(region);$('record-scroller').scrollIntoView({block:'nearest',behavior:'instant'});$('record-scroller').focus({preventScroll:true});}return;}
+ const explore=e.target.closest('a.explore-link');if(explore){try{sessionStorage.setItem('alford-explore-return',JSON.stringify({story:current?.story||storyPosition(),focus:e.target.id||focusOrigin}));}catch{}const u=new URL(explore.href,location.href);u.searchParams.set('from','story');explore.href=u.href;return;}
+ const play=e.target.closest('[data-play-story]');if(play){if(reduced.matches)return;closeSurfaces();if(active===0)goPassage('north-carolina',{smoothScroll:false});$('play-walk').click();return;}
  const person=e.target.closest('[data-person]');if(person){e.preventDefault();openDetail('person',person.dataset.person,person);return;}
+ const adjacent=e.target.closest('[data-adjacent-record]');if(adjacent){const state={...current,key:adjacent.dataset.adjacentRecord,roi:null};history.replaceState(state,'','#record/'+state.key);showRoute(state);return;}
  const source=e.target.closest('[data-source]');if(source){e.preventDefault();openDetail('record',source.dataset.source,source);return;}
  if(e.target.closest('.return-story')){returnToStory();return;}
  if(e.target.closest('.close-dialog')){backOne();return;}
@@ -291,12 +303,12 @@ function initialRoute(){
   const scene=(kind==='record'&&scenes.find(s=>s.image===key))||scenes.find(s=>!s.hero&&(kind==='person'?s.people.includes(key):s.records.includes(key)))||scenes[1];
   const story={id:scene.id,offset:-77,y:0};restore(story);
   const state={kind,key,story,direct:true,depth:0};history.replaceState(state,'');showRoute(state);
- }else if(hash&&$(hash)){const story={id:hash,offset:-77,y:0};history.replaceState({kind:'story',story},'');showRoute(history.state);}
+ }else if(new URLSearchParams(location.search).has('resume')){try{const saved=JSON.parse(sessionStorage.getItem('alford-explore-return'));if(saved?.story){settledScene=sceneFor(saved.story.id)?.id;history.replaceState({kind:'story',story:saved.story},'','#'+saved.story.id);showRoute(history.state);if(saved.focus)$(saved.focus)?.focus({preventScroll:true});}}catch{}if(!current){const id=hash&&$(hash)?hash:'beginning';settledScene=sceneFor(id)?.id;showRoute({kind:'story',story:{id,offset:id==='beginning'?0:-145,y:0}});}}else if(hash&&$(hash)){settledScene=sceneFor(hash)?.id;revealTarget(hash);const story={id:hash,offset:innerWidth<=700?-140:-145,y:0};history.replaceState({kind:'story',story},'');showRoute(history.state);}
  else{history.replaceState({kind:'story',story:{id:'beginning',offset:0,y:0}},'');showRoute(history.state);}
  try{const saved=JSON.parse(localStorage.getItem('alford-reading-place'));if(saved&&$(saved.id)&&saved.id!=='beginning'){$('resume-link').hidden=false;$('resume-link').href='#'+saved.id;$('resume-link').textContent='Resume · '+scenes.find(s=>s.id===saved.id).year;$('resume-link').addEventListener('click',e=>{e.preventDefault();e.stopPropagation();history.pushState({kind:'story',story:saved},'','#'+saved.id);showRoute(history.state);});}}catch{}
  draw();saveEnabled=true;
 }
-document.addEventListener('toggle',e=>{if(e.target.classList.contains('passage-records'))measure();},true);
+document.addEventListener('toggle',e=>{if(e.target.matches('.passage-records,.story-detail'))measure();},true);
 addEventListener('pagehide',()=>{if(saveEnabled&&active>0&&!document.querySelector('dialog[open]'))try{localStorage.setItem('alford-reading-place',JSON.stringify(storyPosition()));}catch{}});
 addEventListener('hashchange',()=>{const hash=decodeURIComponent(location.hash.slice(1)),[kind,key]=hash.split('/'),s=history.state;if((s?.kind===kind&&s?.key===key)||(s?.kind==='story'&&s?.story?.id===hash))return;initialRoute();});
 addEventListener('load',()=>{initialRoute();saveEnabled=true;});measure();
