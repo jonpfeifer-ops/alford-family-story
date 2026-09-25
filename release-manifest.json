@@ -209,16 +209,16 @@
       "sha256": "3d8206cdac4141647f51e11718ddde5eeaa9ded534bafe84f698b0ccc489873c"
     },
     "explore.css": {
-      "bytes": 12209,
-      "sha256": "640ec176815d0af1c85041365544982b44f7328719865bd4a8e7c1cd77d5f757"
+      "bytes": 22523,
+      "sha256": "3f98947f202f2ac4fedb9814d4558e2aad27afe30e6889134a819788b7dcba76"
     },
     "explore.html": {
       "bytes": 3525,
       "sha256": "4bd51fea3307d2b7240fdfb7ce367e501e2e8180cf95789cea795351ae3a5dac"
     },
     "explore.js": {
-      "bytes": 20487,
-      "sha256": "f1f40b72ed82c4ba02ba4bbf6b0c419a266afc55b15b27696cf4a2ab25209fbe"
+      "bytes": 20294,
+      "sha256": "034021e5afa24ec30cb2c4c96dc522642180932cf11ef198bb84bcbc74820c94"
     },
     "index.html": {
       "bytes": 521219,
@@ -237,8 +237,8 @@
       "sha256": "129e5d96884ae325dca06a4579e933d4462a1c229dca7998c4799c72f76c7513"
     },
     "tree-engine.js": {
-      "bytes": 11677,
-      "sha256": "72b3a8853093e720fc590374bf9985964471ad7956d23d9ee9e4a24f97640f9c"
+      "bytes": 21020,
+      "sha256": "3d64e56fea15839b1643656437b03798deff6a8fc2fa63831abd22a9b0b8679b"
     },
     "walk-data.js": {
       "bytes": 230169,
@@ -257,6 +257,6 @@
       "sha256": "bec8253073ed04a247b19ed17e084150fe9c05658da75cd61e9fd104cdf84d19"
     }
   },
-  "bytes": 40267357,
-  "reviewSha256": "4bf572d4c1ee140c482148667c94ca7869905bad4798825d8052f7c2c8785b4d"
+  "bytes": 40286821,
+  "reviewSha256": "40886f80070cd72c8ea11943b54d8c80bd9d55087337aa2a830bfee5f8f64688"
 }
