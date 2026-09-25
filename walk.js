@@ -59,25 +59,53 @@ function directedCamera(s,p){
 }
 const journeyLayer=svgEl('g',{'class':'journey-lines'});$('regional-world').appendChild(journeyLayer);
 const journeyLabels=document.createElement('div');journeyLabels.className='journey-labels';$('regional-stage').appendChild(journeyLabels);
+const contextLabels=document.createElement('div');contextLabels.className='atlas-labels';$('regional-stage').appendChild(contextLabels);
+const contextItems=data.mapContext.labels.map(l=>{const el=document.createElement('div');el.className='atlas-label atlas-'+l.kind;el.textContent=l.name;contextLabels.appendChild(el);const dot=l.kind==='town'?svgEl('circle',{cx:l.point[0],cy:l.point[1],r:1.5,'class':'atlas-town-dot'}):null;if(dot)$('regional-world').appendChild(dot);return {...l,el,dot};}).sort((a,b)=>a.priority-b.priority);
+const atlasFurniture=document.createElement('div');atlasFurniture.className='atlas-furniture';atlasFurniture.innerHTML='<span class="atlas-north" aria-hidden="true">N<span>↑</span></span><span class="atlas-scale"><i></i><small></small></span><button class="atlas-about" data-source="landscape">About this map ↗</button>';$('regional-stage').appendChild(atlasFurniture);
 let journeyKey='';
 function drawJourney(s,p){
  if(!s.journey)return;
  const j=s.journey,nodes=j.nodes,phase=reduced.matches?1:smooth(clamp((p-.08)/.7));
  if(journeyKey!==s.id){journeyKey=s.id;journeyLayer.replaceChildren();journeyLabels.replaceChildren();
   nodes.forEach((node,i)=>{
-   if(i){const a=nodes[i-1].point,b=node.point,d=`M${a} Q${(a[0]+b[0])/2} ${a[1]+(b[1]-a[1])*.24} ${b}`;
-    journeyLayer.appendChild(svgEl('path',{d,'class':'journey-path','data-leg':i}));}
+   if(i)journeyLayer.appendChild(svgEl('path',{'class':'journey-path','data-leg':i}));
    journeyLayer.appendChild(svgEl('circle',{cx:node.point[0],cy:node.point[1],r:3,'class':'journey-stop','data-node':i}));
    const label=document.createElement('div');label.className='journey-label';label.innerHTML=`<strong>${esc(node.title)}</strong><small>${esc(node.date)}</small>`;journeyLabels.appendChild(label);
   });
  }
- function frame(list){const xs=list.map(n=>n.point[0]),ys=list.map(n=>n.point[1]),minX=Math.min(...xs),maxX=Math.max(...xs),minY=Math.min(...ys),maxY=Math.max(...ys);return {x:(minX+maxX)/2,y:(minY+maxY)/2,scale:Math.min(8,850/(maxX-minX+75),400/(maxY-minY+65))};}
- const a=frame(nodes.slice(0,j.from+1)),b=frame(nodes),scale=mix(a.scale,b.scale,phase),cx=mix(a.x,b.x,phase),cy=mix(a.y,b.y,phase);
- $('regional-world').setAttribute('transform',`translate(${585-cx*scale} ${318-cy*scale}) scale(${scale})`);
+ const box=$('regional-stage').getBoundingClientRect(),w=box.width,h=box.height,caption=$('regional-label');
+ caption.textContent=j.note;const bottom=caption.offsetHeight+18;
+ $('regional-map').setAttribute('viewBox',`0 0 ${w} ${h}`);
+ function frame(points){const xs=points.map(n=>n[0]),ys=points.map(n=>n[1]),minX=Math.min(...xs),maxX=Math.max(...xs),minY=Math.min(...ys),maxY=Math.max(...ys);return {x:(minX+maxX)/2,y:(minY+maxY)/2,scale:Math.min((w-32)/(maxX-minX),(h-bottom-24)/(maxY-minY))};}
+ const previous=states[states.indexOf(s)-1],b=frame(j.bounds),a=previous?.journey?frame(previous.journey.bounds):{...b,scale:b.scale*1.14};
+ const scale=mix(a.scale,b.scale,phase),cx=mix(a.x,b.x,phase),cy=mix(a.y,b.y,phase);
+ $('regional-world').setAttribute('transform',`translate(${w*.5-cx*scale} ${(h-bottom)*.5-cy*scale}) scale(${scale})`);
  for(const path of journeyLayer.querySelectorAll('path')){const leg=+path.dataset.leg,a=nodes[leg-1].point,b=nodes[leg].point,c=[(a[0]+b[0])/2,a[1]+(b[1]-a[1])*.24],t=leg<=j.from?1:phase,end=a.map((v,i)=>(1-t)*(1-t)*v+2*(1-t)*t*c[i]+t*t*b[i]),control=a.map((v,i)=>mix(v,c[i],t));path.setAttribute('d',`M${a} Q${control} ${end}`);}
- const matrix=$('regional-world').getScreenCTM(),box=$('regional-stage').getBoundingClientRect();
- nodes.forEach((node,i)=>{const point=new DOMPoint(...node.point).matrixTransform(matrix),el=journeyLabels.children[i];el.style.left=Math.max(8,Math.min(box.width-el.offsetWidth-10,point.x-box.left+node.dx))+'px';el.style.top=(point.y-box.top+node.dy)+'px';el.style.opacity=i<=j.from?1:clamp(phase*2-.3);journeyLayer.querySelector(`[data-node="${i}"]`).style.opacity=i<=j.from?1:clamp(phase*2);});
- $('regional-label').textContent=j.note;$('regional-stage').dataset.region=s.region;$('regional-stage').dataset.pin='hidden';
+ const matrix=$('regional-world').getScreenCTM(),occupied=[];
+ function project(point){const q=new DOMPoint(...point).matrixTransform(matrix);return [q.x-box.left,q.y-box.top];}
+ function overlaps(r){return occupied.some(o=>r.x<o.x+o.w+6&&r.x+r.w+6>o.x&&r.y<o.y+o.h+4&&r.y+r.h+4>o.y);}
+ function place(el,x,y,preferred,mandatory=false){
+  const ew=el.offsetWidth,eh=el.offsetHeight;
+  const choices=[preferred,[10,-eh-7],[10,8],[-ew-10,8],[-ew-10,-eh-7],[10,-eh/2],[-ew-10,-eh/2],[7,23],[7,-eh-23],[-ew-7,23]];
+  for(const [dx,dy] of choices){const r={x:x+dx,y:y+dy,w:ew,h:eh};
+   if(r.x<6||r.x+r.w>w-6||r.y<8||r.y+r.h>h-bottom||overlaps(r))continue;
+   el.style.left=r.x+'px';el.style.top=r.y+'px';el.style.opacity=1;occupied.push(r);return true;
+  }
+  if(mandatory){const r={x:Math.max(6,Math.min(w-ew-6,x+10)),y:Math.max(8,Math.min(h-bottom-eh,y+8)),w:ew,h:eh};el.style.left=r.x+'px';el.style.top=r.y+'px';el.style.opacity=1;occupied.push(r);return true;}
+  el.style.opacity=0;return false;
+ }
+ nodes.forEach((node,i)=>{const [x,y]=project(node.point),el=journeyLabels.children[i],alpha=i<=j.from?1:clamp(phase*2-.3);place(el,x,y,[node.dx,node.dy],true);el.style.opacity=(x<5||x>w-5||y<5||y>h-bottom)?0:alpha;const circle=journeyLayer.querySelector(`[data-node="${i}"]`);circle.setAttribute('r',4/scale);circle.style.opacity=alpha;});
+ let count=0;
+ const priorities=s.region==='LA'?{'New Orleans':0,'Baton Rouge':1,'Mississippi River':2,'Pearl River':2,'Natchez':3,'Savannah':4,'GEORGIA':5,'ALABAMA':5,'MISSISSIPPI':5,'LOUISIANA':5}:s.region==='GA'?{'Savannah':0,'Augusta':1,'Oconee River':2,'Altamaha River':2,'Savannah River':3,'GEORGIA':4,'SOUTH CAROLINA':4}:null;
+ const ordered=priorities?[...contextItems].sort((a,b)=>(priorities[a.name]??10+a.priority)-(priorities[b.name]??10+b.priority)):contextItems;
+ for(const l of ordered){const [x,y]=project(l.point);l.el.style.opacity=0;if(l.dot){l.dot.style.opacity=0;l.dot.setAttribute('r',1.7/scale);}
+  if(x<16||x>w-16||y<16||y>h-bottom-16||count>=(narrow.matches?8:16))continue;
+  if(place(l.el,x,y,l.kind==='river'?[6,-17]:l.kind==='state'?[-l.el.offsetWidth/2,0]:[7,3])){count++;if(l.dot)l.dot.style.opacity=1;}
+ }
+ // Scale at the current latitude; this is a regional orientation map.
+ const km=narrow.matches?(s.region==='NC'?50:200):(s.region==='NC'?50:100),pixels=km/6371*1850*scale;
+ atlasFurniture.querySelector('i').style.width=pixels+'px';atlasFurniture.querySelector('small').textContent='≈ '+km+' km';atlasFurniture.querySelector('.atlas-north').style.transform=`rotate(${s.region==='NC'?-4:s.region==='GA'?-2:1}deg)`;
+ $('regional-stage').dataset.region=s.region;$('regional-stage').dataset.pin='hidden';
 }
 function revealGraphic(s,p){
  const phase=reduced.matches?1:clamp(p/.75),elements=$('graphic-stage').querySelectorAll('.milestones>div,.household-sequence>div,.lineage-row,.census-adults>div');
@@ -128,7 +156,7 @@ function draw(){
  if(record){open.dataset.source=record;open.setAttribute('aria-label',`Expand ${records[record].title} to zoom and pan`);$('document-caption').textContent=records[record].caption||records[record].title;}
  $('family-stage').style.opacity=val('familyVisible');$('graphic-stage').style.opacity=val('graphic');
  $('family-stage').inert=!shown.family;$('graphic-stage').inert=!shown.graphic;
- $('regional-stage').style.opacity=val('regional');
+ $('regional-stage').style.opacity=val('regional');$('regional-stage').inert=!shown.regional;
  if(shown.regional){drawJourney(shown,shown===a?segment:0);}
  if(shownId!==shown.id){shownId=shown.id;
   if(shown.family)$('family-stage').innerHTML=familyHTML(shown);
