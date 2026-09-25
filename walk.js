@@ -13,7 +13,7 @@ const settings={
  john:{camera:john,map:1,john:1,labels:['john','riverSouth'],key:1},
  seaborn:{camera:both,map:1,john:1,later:1,seaborn:1,labels:['john','seaborn','riverSouth'],key:1},
  'all-land':{camera:overview,map:1,jacob:1,john:1,later:1,seaborn:1,labels:['jacob','john','seaborn','river'],key:1},
- image:{map:.18},family:{map:.2,familyVisible:1},regional:{regional:1},'river-home':{graphic:1},twins:{map:.12,graphic:1},farm:{map:.15,graphic:1},households:{map:.12,graphic:1},timeline:{map:.09,graphic:1},cities:{graphic:1},'adult-census':{graphic:1},lineage:{map:.15,graphic:1}
+ image:{map:.035},family:{map:.06,familyVisible:1},regional:{regional:1},'river-home':{graphic:1},twins:{map:.12,graphic:1},farm:{map:.15,graphic:1},households:{map:.035,graphic:1},timeline:{map:.035,graphic:1},cities:{graphic:1},'adult-census':{map:.035,graphic:1},lineage:{map:.035,graphic:1}
 };
 const states=scenes.map(s=>{const year=Number(s.year.match(/\d{4}/)?.[0]);const context={john:year>=1858?1:0,later:year>=1861?1:0,seaborn:year>=1881?1:0,camera:year===1831?claim:year>=1858?both:overview};return {...defaults,...context,...settings[s.visual],...s};});
 const labels=data.mapLabels.labels.map(l=>({...l}));
@@ -51,7 +51,16 @@ function imageLayer(slot,s,opacity,progress=0,to=null,t=0){
  // Use the held full-resolution image for a real discovery zoom, never enlarge a small crop.
  const src=r.transcript||s.roi||s.focus?r.image:(r.display||r.image);
  if(img.getAttribute('src')!==src){img.src=src;img.alt=r.title;}
- const tr=imageTransform(roi);img.style.width=dims[0]+'px';img.style.height=dims[1]+'px';img.style.transform=`translate(${tr.x}px,${tr.y}px) scale(${tr.scale})`;
+ const tr=imageTransform(roi);holder.style.clipPath=s.documentMode==='portrait'?`inset(${Math.max(0,tr.y+roi[1]*tr.scale)}px ${Math.max(0,docWidth-tr.x-roi[2]*tr.scale)}px ${Math.max(0,docHeight-tr.y-roi[3]*tr.scale)}px ${Math.max(0,tr.x+roi[0]*tr.scale)}px)`:'none';img.style.width=dims[0]+'px';img.style.height=dims[1]+'px';img.style.transform=`translate(${tr.x}px,${tr.y}px) scale(${tr.scale})`;
+ if(slot==='a'){
+  const hi=$('document-highlight');hi.hidden=!s.highlight;
+  if(s.highlight){const [l,top,r,b]=s.highlight;hi.style.left=(tr.x+l*tr.scale)+'px';hi.style.top=(tr.y+top*tr.scale)+'px';hi.style.width=((r-l)*tr.scale)+'px';hi.style.height=((b-top)*tr.scale)+'px';hi.style.opacity=opacity*(reduced.matches?1:clamp((progress-.2)/.3));}
+  const overview=$('document-overview'),thumb=$('overview-image'),mark=$('overview-box'),show=!['photograph','portrait'].includes(s.documentMode);
+  overview.hidden=!show;overview.style.opacity=opacity;
+  if(show){if(thumb.getAttribute('src')!==r.image)thumb.src=r.image;const w=narrow.matches?45:70,h=Math.min(narrow.matches?64:100,w*dims[1]/dims[0]),actualW=h*dims[0]/dims[1];overview.style.width=actualW+'px';overview.style.height=h+'px';
+   mark.style.left=100*roi[0]/dims[0]+'%';mark.style.top=100*roi[1]/dims[1]+'%';mark.style.width=100*(roi[2]-roi[0])/dims[0]+'%';mark.style.height=100*(roi[3]-roi[1])/dims[1]+'%';}
+ }
+
 }
 function directedCamera(s,p){
  const start=s.cameraStart||s.camera,phase=reduced.matches?1:smooth(clamp(p/.78));
@@ -62,11 +71,12 @@ const journeyLabels=document.createElement('div');journeyLabels.className='journ
 const contextLabels=document.createElement('div');contextLabels.className='atlas-labels';$('regional-stage').appendChild(contextLabels);
 const contextItems=data.mapContext.labels.map(l=>{const el=document.createElement('div');el.className='atlas-label atlas-'+l.kind;el.textContent=l.name;contextLabels.appendChild(el);const dot=l.kind==='town'?svgEl('circle',{cx:l.point[0],cy:l.point[1],r:1.5,'class':'atlas-town-dot'}):null;if(dot)$('regional-world').appendChild(dot);return {...l,el,dot};}).sort((a,b)=>a.priority-b.priority);
 const atlasFurniture=document.createElement('div');atlasFurniture.className='atlas-furniture';atlasFurniture.innerHTML='<span class="atlas-north" aria-hidden="true">N<span>↑</span></span><span class="atlas-scale"><i></i><small></small></span><button class="atlas-about" data-source="landscape">About this map ↗</button>';$('regional-stage').appendChild(atlasFurniture);
+const journeyInset=document.createElement('aside');journeyInset.className='journey-inset';$('regional-stage').appendChild(journeyInset);
 let journeyKey='';
 function drawJourney(s,p){
  if(!s.journey)return;
  const j=s.journey,nodes=j.nodes,phase=reduced.matches?1:smooth(clamp((p-.08)/.7));
- if(journeyKey!==s.id){journeyKey=s.id;journeyLayer.replaceChildren();journeyLabels.replaceChildren();
+ if(journeyKey!==s.id){journeyKey=s.id;journeyInset.hidden=!s.mapInset;journeyInset.innerHTML=s.mapInset?`<small>${esc(s.mapInset.title)}</small><div>${s.mapInset.names.map((name,i)=>`<span><b>${esc(name)}</b><em>${esc(s.mapInset.captions[i])}</em></span>`).join('')}</div>`:'';journeyLayer.replaceChildren();journeyLabels.replaceChildren();
   nodes.forEach((node,i)=>{
    if(i)journeyLayer.appendChild(svgEl('path',{'class':'journey-path','data-leg':i}));
    journeyLayer.appendChild(svgEl('circle',{cx:node.point[0],cy:node.point[1],r:3,'class':'journey-stop','data-node':i}));
@@ -108,27 +118,35 @@ function drawJourney(s,p){
  $('regional-stage').dataset.region=s.region;$('regional-stage').dataset.pin='hidden';
 }
 function revealGraphic(s,p){
- const phase=reduced.matches?1:clamp(p/.75),elements=$('graphic-stage').querySelectorAll('.milestones>div,.household-sequence>div,.lineage-row,.census-adults>div');
+ const phase=reduced.matches?1:clamp(p/.65),elements=$('graphic-stage').querySelectorAll('.milestones>div,.household-card,.lineage-row,.census-adults>div');
  elements.forEach((el,i)=>{const n=clamp(phase*elements.length-i+.4);el.style.opacity=.25+.75*n;el.style.transform=`translateY(${(1-n)*16}px)`;});
  const blocks=$('graphic-stage').querySelectorAll('.farm-blocks i');blocks.forEach((el,i)=>{el.style.opacity=reduced.matches?1:clamp(phase*70-i);});
  for(const path of $('graphic-stage').querySelectorAll('.city-connection,.river-home-flow')){path.style.strokeDasharray=path.getTotalLength();path.style.strokeDashoffset=path.getTotalLength()*(1-phase);}
- for(const el of $('graphic-stage').querySelectorAll('.river-home-inheritance'))el.style.opacity=clamp(phase*2-.3);
+ for(const el of $('graphic-stage').querySelectorAll('.inheritance-heir,.child-dots i'))el.style.opacity=reduced.matches?1:clamp(phase*2-.15);
  const family=$('family-stage');if(s.family){family.querySelector('.family-child')?.style.setProperty('opacity',String(reduced.matches?1:clamp(p*3)));family.querySelector('.descent-line')?.style.setProperty('transform',`scaleY(${reduced.matches?1:clamp(p*3)})`);}
 }
-function personButton(k){return `<button class="family-person" data-person="${k}"><span>${esc(people[k].name)}</span><small>${esc(people[k].dates)}</small></button>`;}
-function familyHTML(s){const f=s.family;return `<p class="family-overline">${esc(s.year)}</p><div class="couple">${personButton(f[0])}<span class="ampersand">&</span>${personButton(f[1])}</div>${f[2]&&s.child?`<div class="family-child"><span class="descent-line"></span><small>${esc(s.childLabel||'THEIR CHILD')}</small>${personButton(f[2])}</div>`:''}<p class="family-context">${esc(s.familyCaption||'Select a name to meet the person')}</p>`;}
+function personButton(k,cls=''){return `<button class="family-person ${cls}" data-person="${k}"><span>${esc(people[k].graphicName||people[k].name)}</span><small>${esc(people[k].dates)}</small></button>`;}
+const generations=[['john','margaret'],['seaborn','laura'],['esco','mary-lou'],['christine']];
+function familyPosition(key){return generations.findIndex(row=>row.includes(key));}
+function familyTrail(key){const at=familyPosition(key);return `<div class="generation-trail" aria-label="Place in Christine’s family">${generations.map((r,i)=>`<span class="${i===at?'current':''}">${esc(people[r[0]].name.split(' ')[0])}</span>${i<3?'<i aria-hidden="true">→</i>':''}`).join('')}</div>`;}
+function familyHTML(s){const f=s.family;return `<div class="family-frame">${familyTrail(f[0])}<p class="family-overline">${esc(s.year)} · ${esc(s.familyCaption||'Marriage')}</p><div class="couple">${personButton(f[0])}<span class="couple-join" aria-hidden="true">&</span>${personButton(f[1])}</div>${f[2]&&s.child?`<div class="family-child"><span class="descent-line"></span><small>${esc(s.childLabel||'THEIR CHILD')}</small>${personButton(f[2],'child-card')}</div>`:f[2]?'<div class="family-child-space" aria-hidden="true"></div>':''}<p class="family-context">Select a name to see the records <span aria-hidden="true">↗</span></p></div>`;}
 function graphicHTML(s){
- if(s.visual==='river-home'){const r=s.riverHome;return `<svg class="river-home-diagram" viewBox="0 0 600 530" role="img" aria-label="Diagram showing the plantation on both banks of the Tar River, as described in Julius’s will"><path class="river-home-bank" d="M280 0C235 90 385 130 315 230S200 365 310 530"/><path class="river-home-water" d="M280 0C235 90 385 130 315 230S200 365 310 530"/><path class="river-home-flow" d="M280 0C235 90 385 130 315 230S200 365 310 530"/><text class="river-home-name" x="35" y="115">${esc(r.family)}</text><text class="river-home-caption" x="35" y="145">${esc(r.place)}</text><path class="river-home-crossing" d="M105 200H440"/><text class="river-home-river" x="340" y="285">${esc(r.river)}</text><g class="river-home-inheritance"><path d="M145 228V360M139 351L145 360 151 351"/><text x="35" y="408">${esc(r.inheritance)}</text></g></svg><p class="graphic-note">${esc(r.note)}</p>`;}
-
- if(s.visual==='timeline')return `<div class="milestones">${s.milestones.map(m=>`<div><time>${esc(m[0])}</time><h3>${esc(m[1])}</h3><p>${esc(m[2])}</p></div>`).join('')}</div>`;
- if(s.visual==='farm')return `<div class="farm-blocks" aria-label="40 improved acres and 600 unimproved acres">${Array.from({length:64},(_,i)=>`<i class="${i<4?'improved':''}"></i>`).join('')}</div><div class="farm-legend"><span><i></i> ${esc(s.graphicLabels[0])}</span><span>${esc(s.graphicLabels[1])}</span></div><p class="graphic-note">${esc(s.graphicLabels[2])}</p>`;
- if(s.visual==='lineage')return `<div class="lineage-summary">${[['john','margaret'],['seaborn','laura'],['esco','mary-lou'],['christine']].map((row,i)=>`<div class="lineage-row">${row.map(personButton).join('<span>&</span>')}</div>${i<3?'<span class="lineage-link" aria-hidden="true"></span>':''}`).join('')}</div><p class="graphic-note">${esc(s.graphicNote)}</p>`;
- if(s.visual==='cities'){
-  const xy=(lon,lat)=>[70+(lon+91.3)*340,65+(31.04-lat)*396.6],pts=s.locations.map(p=>({...p,xy:xy(...p.coordinates)}));
-  return `<svg viewBox="0 0 600 580" class="cities-map" role="img" aria-label="Mount Hermon, New Orleans and Baton Rouge in their geographic positions"><g class="city-grid">${[30,30.5,31].map(lat=>`<path d="M40 ${xy(-91.3,lat)[1]}H555"/>`).join('')}${[-91.2,-90.7,-90.2].map(lon=>`<path d="M${xy(lon,31)[0]} 45V520"/>`).join('')}</g><path class="city-connection" d="M${pts.map(p=>p.xy.join(' ')).join(' L')}"/>${pts.map(p=>`<g transform="translate(${p.xy.join(' ')})"><circle r="6"/><text y="-23">${esc(p.year)}</text><text class="city-name" y="28">${esc(p.name)}</text><text class="city-caption" y="48">${esc(p.role)}</text></g>`).join('')}<path d="M40 533H182" class="city-scale"/><text class="city-caption" x="40" y="555">40 km</text></svg><p class="graphic-note">${esc(s.graphicNote)}</p>`;
+ if(s.visual==='river-home'){const r=s.riverHome;return `<div class="inheritance-heading"><small>${esc(s.year)}</small><h3>${esc(r.family)}</h3><p>${esc(r.place)}</p></div><svg class="river-home-diagram" viewBox="0 0 600 340" role="img" aria-label="Diagram of inheritance: Julius and Lucy’s plantation, on both banks of the Tar River, left to their son Jacob"><defs><pattern id="bank-hatch" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(25)"><path d="M0 0V9" stroke="#9f9577" stroke-width="1" opacity=".35"/></pattern></defs><path class="inheritance-bank" d="M75 55Q150 40 256 65L290 202Q170 240 75 215Z M323 68Q435 40 523 65L523 218Q431 233 352 205Z"/><path class="river-home-bank" d="M278 5C240 65 343 91 306 155S272 229 332 270"/><path class="river-home-water" d="M278 5C240 65 343 91 306 155S272 229 332 270"/><path class="river-home-flow" d="M278 5C240 65 343 91 306 155S272 229 332 270"/><text class="river-home-river" x="357" y="152">${esc(r.river)}</text><text class="inheritance-bank-label" x="74" y="302">${esc(r.bankLabel)}</text></svg><div class="inheritance-heir"><small>${esc(r.transferLabel)}</small><span>${esc(r.inheritance)}</span></div><p class="graphic-note">${esc(r.note)}</p>`;}
+ if(s.visual==='timeline'){
+  const big=s.careerYears?`<div class="career-total"><strong>${s.careerYears}</strong><span>${esc(s.careerLabel)}<small>${esc(s.careerNote)}</small></span></div>`:'';
+  return `${s.graphicTitle?`<p class="graphic-overline">${esc(s.graphicTitle)}</p>`:''}${big}<div class="milestones ${s.childCounts?'with-children':''}">${s.milestones.map((m,i)=>`<div><time>${esc(m[0])}</time><span class="milestone-dot" aria-hidden="true"></span><section><h3>${esc(m[1])}</h3>${s.childCounts?`<div class="child-dots" aria-label="${s.childCounts[i]} children">${Array.from({length:s.childCounts[i]},()=>'<i aria-hidden="true"></i>').join('')}</div>`:''}<p>${esc(m[2])}</p></section></div>`).join('')}</div>`;
  }
- if(s.visual==='adult-census')return `<p class="graphic-overline">${esc(s.graphicLabel)}</p><div class="census-adults">${s.adults.map(p=>`<div><h3>${esc(p[0])}</h3><p>${esc(p[1])}</p><small>${esc(p[2])}</small></div>`).join('')}</div><p class="graphic-note">${esc(s.graphicNote)}</p>`;
- if(s.visual==='twins'||s.visual==='households')return `<div class="household-sequence">${s.cards.map(c=>`<div><small>${esc(c[0])}</small><h3>${esc(c[1])}</h3><p>${esc(c[2])}</p></div>`).join('')}</div><p class="graphic-note">${esc(s.graphicNote)}</p>`;
+ if(s.visual==='farm'){const v=s.farmValues,total=v.improved+v.unimproved;return `<div class="farm-heading"><span class="graphic-overline">${esc(s.year)} · REPORTED FARM ACREAGE</span><h3>${esc(s.graphicTitle)}</h3></div><div class="farm-blocks" role="img" aria-label="${v.improved} improved acres and ${v.unimproved} unimproved acres, out of ${total}">${Array.from({length:total/v.unit},(_,i)=>`<i class="${i<v.improved/v.unit?'improved':''}"></i>`).join('')}</div><div class="farm-legend"><div><strong>${v.improved}</strong><span>improved acres</span></div><div><strong>${v.unimproved}</strong><span>unimproved acres</span></div></div><div class="farm-produce">${s.farmItems.map(t=>`<span>${esc(t)}</span>`).join('')}</div><p class="graphic-note">${esc(s.graphicLabels[2])}</p>`;}
+ if(s.visual==='lineage')return `<p class="graphic-overline">${esc(s.graphicTitle)}</p><div class="lineage-summary">${generations.map((row,i)=>`<div class="lineage-row"><small class="generation-name">${esc(s.generationLabels[i])}</small><div class="lineage-couple">${row.map(k=>personButton(k,k===row[0]?'line-person':'partner-person')).join('<span class="lineage-join" aria-hidden="true">&</span>')}</div></div>${i<3?'<span class="lineage-link" aria-hidden="true"></span>':''}`).join('')}</div><p class="graphic-note">Select any name to explore this line.</p>`;
+ if(s.visual==='cities'){
+  const xy=(lon,lat)=>[65+(lon+91.75)*270,38+(31.27-lat)*315],pts=s.locations.map(p=>({...p,xy:xy(...p.coordinates)}));
+  const riverPaths=data.christineMap.rivers.map(r=>{let d='';for(const line of r.lines){let pen=false;for(const p of line){if(p[0]<-92||p[0]>-89.5||p[1]<29.65||p[1]>31.5){pen=false;continue;}d+=(pen?'L':'M')+xy(...p).join(',');pen=true;}}return `<path d="${d}" class="context-river"/>`;}).join('');
+  const offsets=[[12,-5],[-18,18],[-18,-8]];
+  const riverText=[['Mississippi',[-91.05,30.2],43],['Pearl',[-89.85,30.9],76]].map(([name,target,angle])=>{const points=data.christineMap.rivers.filter(r=>r.name===name).flatMap(r=>r.lines.flat());const p=points.reduce((a,b)=>Math.hypot(a[0]-target[0],a[1]-target[1])<Math.hypot(b[0]-target[0],b[1]-target[1])?a:b),[x,y]=xy(...p);return `<text class="city-water-label" x="${x+10}" y="${y}" transform="rotate(${angle} ${x+10} ${y})">${name} River</text>`;}).join('');
+  return `<p class="graphic-overline">${esc(s.graphicTitle)}</p><svg viewBox="0 0 630 560" class="cities-map" role="img" aria-label="Christine’s three places beside the Mississippi, Pearl and Bogue Chitto rivers"><defs><clipPath id="cities-clip"><rect x="0" y="0" width="630" height="560"/></clipPath></defs><g clip-path="url(#cities-clip)">${riverPaths}<path class="city-connection" d="M${pts.map(p=>p.xy.join(' ')).join(' L')}"/></g>${riverText}${pts.map((p,i)=>`<g transform="translate(${p.xy.join(' ')})" class="city-stop"><circle r="7"/><text class="city-number" y="3">${i+1}</text><g transform="translate(${offsets[i].join(' ')})" text-anchor="${i>0?'end':'start'}"><text y="-15">${esc(p.year)}</text><text class="city-name" y="6">${esc(p.name)}</text><text class="city-caption" y="25">${esc(p.role)}</text></g></g>`).join('')}<path d="M28 510H140" class="city-scale"/><text class="city-caption" x="28" y="533">≈ 40 km</text></svg><p class="graphic-note">${esc(s.graphicNote)}</p>`;
+ }
+ if(s.visual==='adult-census')return `<p class="graphic-overline">${esc(s.graphicLabel)}</p><div class="census-adults">${s.adults.map((p,i)=>`<div><span class="occupation-index">0${i+1}</span><h3>${esc(p[0])}</h3><div class="occupation-role">${esc(s.occupationLabels[i])}</div><p>${esc(s.workplaces[i])}</p><small>${esc(s.workDetails[i])}</small></div>`).join('')}</div><p class="graphic-note">${esc(s.graphicNote)}</p>`;
+ if(s.visual==='twins'||s.visual==='households')return `<p class="graphic-overline">${esc(s.diagramHeading||s.year)}</p><div class="household-sequence">${s.cards.map((c,i)=>`${i?`<div class="household-link"><span></span><small>${esc(s.diagramLink||'')}</small><span></span></div>`:''}<div class="household-card"><small>${esc(c[0])}</small><h3>${i===0&&s.diagramPartner?`${esc(s.diagramPartner)} <em>&</em> `:''}${esc(c[1])}</h3><p>${esc(c[2])}</p></div>`).join('')}</div><p class="graphic-note">${esc(s.graphicNote)}</p>`;
  return '';
 }
 function draw(){
@@ -142,13 +160,14 @@ function draw(){
   const drawing=a.drawTract===id||(a.drawTract==='john'&&id.startsWith('T-JSA'));
   tractOutlines[id].style.opacity=drawing?opacity:0;tractOutlines[id].style.strokeDashoffset=reduced.matches?0:1-clamp(segment/.7);
  }
- labels.forEach(l=>{l.el.style.opacity=mix(a.labels.includes(l.id)?1:0,b.labels.includes(l.id)?1:0,t)*val('map');l.el.style.left=(cam.x+l.p[0]*cam.scale)+'px';l.el.style.top=(cam.y+l.p[1]*cam.scale)+'px';});
+ labels.forEach(l=>{l.el.style.opacity=mix(a.labels.includes(l.id)?1:0,b.labels.includes(l.id)?1:0,t)*val('map');l.el.style.left=(cam.x+l.p[0]*cam.scale)+'px';l.el.style.top=(cam.y+l.p[1]*cam.scale-(narrow.matches?(l.id==='john'?30:l.id==='jacob'?22:0):0))+'px';});
  ['map-compass','map-scale','geographic-context','map-source-label'].forEach(id=>$(id).style.opacity=clamp((val('map')-.25)/.75));
- $('map-key').style.opacity=val('key')*val('map');
+ $('map-key').style.opacity=narrow.matches&&(shown.mapSteps||shown.mapQuote)?0:val('key')*val('map');$('map-evidence').style.opacity=shown.mapSteps||shown.mapQuote?val('map'):0;
  [...$('map-key').children].forEach((el,k)=>el.style.display=val(['jacob','john','seaborn'][k])>.02?'flex':'none');
  $('scale-bar').style.width=(804.672*cam.scale)+'px';$('scale-text').textContent='½ mile';
  const same=a.image&&b.image&&records[a.image].image===records[b.image].image;
  imageLayer('a',a,same?1:(a.image?1-t:0),segment,same?b:null,same?t:0);imageLayer('b',b,!same&&b.image?t:0,0);
+ $('document-stage').dataset.mode=shown.documentMode||'record';
  const imageOpacity=mix(a.image?1:0,b.image?1:0,t);$('document-stage').style.opacity=imageOpacity;
  const record=shown.image;const open=$('document-open');open.hidden=!record||imageOpacity<.45;
  $('document-stage').style.pointerEvents='none';open.style.pointerEvents=open.hidden?'none':'auto';
@@ -160,7 +179,10 @@ function draw(){
  if(shown.regional){drawJourney(shown,shown===a?segment:0);}
  if(shownId!==shown.id){shownId=shown.id;
   if(shown.family)$('family-stage').innerHTML=familyHTML(shown);
-  if(shown.graphic)$('graphic-stage').innerHTML=graphicHTML(shown);
+  if(shown.graphic)$('graphic-stage').innerHTML='<div class="graphic-composition">'+graphicHTML(shown)+'</div>';
+  $('graphic-stage').dataset.kind=shown.visual;$('graphic-stage').dataset.scene=shown.id;
+  $('map-evidence').innerHTML=shown.mapSteps?`<div class="map-step-row">${shown.mapSteps.map(m=>`<span><b>${esc(m[0])}</b><small>${esc(m[1])}</small></span>`).join('')}</div>${shown.mapStepNote?`<p>${esc(shown.mapStepNote)}</p>`:''}`:shown.mapQuote?`<blockquote>${esc(shown.mapQuote)}</blockquote><small>${esc(shown.mapQuoteSource)}</small>`:'';
+
   document.body.dataset.visual=shown.visual;
   const context=$('geographic-context').children;context[0].textContent=shown.mapHeading||'WASHINGTON PARISH';context[1].textContent=shown.mapPlace||'Louisiana · Bogue Chitto River';
  }
