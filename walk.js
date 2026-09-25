@@ -32,11 +32,12 @@ for(const f of window.ALfordLandscape.features.filter(f=>f.kind==='tract')){
 }
 for(const l of labels){const el=document.createElement('div');el.className='map-label '+l.class;el.innerHTML=`<span class="label-title">${l.title}</span><span class="label-sub">${l.sub}</span>`;$('map-labels').appendChild(el);l.el=el;}
 for(const id of ['land-map','map-labels','map-key','map-compass','map-scale','geographic-context','map-source-label'])$(id).setAttribute('aria-hidden','true');
+const riverAtlas=new AlfordRiverAtlas($('river-atlas'),data.riverAtlas,window.ALfordLandscape,records);
 const beats=[...document.querySelectorAll('.beat')];
 let anchors=[],width=innerWidth,height=innerHeight,docWidth=0,docHeight=0,queued=false,active=-1,shownId='',frameState=null,lastSaved=0,saveEnabled=false;
 function measure(){
  width=$('landscape').clientWidth;height=$('landscape').clientHeight;
- anchors=beats.map((e,i)=>i===0?0:e.getBoundingClientRect().top+scrollY-(narrow.matches?140:145)-1);
+ anchors=beats.map((e,i)=>i===0?0:e.getBoundingClientRect().top+scrollY-(narrow.matches?200:165)-1);
  docWidth=$('document-stage').clientWidth;docHeight=$('document-stage').clientHeight;schedule();
 }
 function cameraFrame(c){const mobile=narrow.matches,w=width*(mobile?.83:.47),h=height*(mobile?.36:.68),scale=Math.min(w/c[2],h/c[3]);return {scale,x:width*(mobile?.49:.72)-c[0]*scale,y:height*(mobile?.30:.50)-c[1]*scale};}
@@ -52,7 +53,7 @@ function imageLayer(slot,s,opacity,progress=0,to=null,t=0){
  if(to)roi=roi.map((v,i)=>mix(v,imageROI(to)[i],t));
  // Use the held full-resolution image for a real discovery zoom, never enlarge a small crop.
  const src=r.transcript||s.roi||s.focus?r.image:(r.display||r.image);
- if(img.getAttribute('src')!==src){img.src=src;img.alt=r.title;}
+ if(img.getAttribute('src')!==src){img.style.visibility='hidden';img.onload=()=>{img.style.visibility='visible';};img.src=src;img.alt=r.title;}if(img.complete&&img.naturalWidth)img.style.visibility='visible';
  const tr=imageTransform(roi);holder.style.clipPath=s.documentMode==='portrait'?`inset(${Math.max(0,tr.y+roi[1]*tr.scale)}px ${Math.max(0,docWidth-tr.x-roi[2]*tr.scale)}px ${Math.max(0,docHeight-tr.y-roi[3]*tr.scale)}px ${Math.max(0,tr.x+roi[0]*tr.scale)}px)`:'none';img.style.width=dims[0]+'px';img.style.height=dims[1]+'px';img.style.transform=`translate(${tr.x}px,${tr.y}px) scale(${tr.scale})`;
  if(slot==='a'){
   const hi=$('document-highlight');hi.hidden=!s.highlight;
@@ -152,6 +153,8 @@ function graphicHTML(s){
  return '';
 }
 function draw(){
+ // Document heights can change after fonts, disclosures, and dialog restoration.
+ anchors=beats.map((e,i)=>i===0?0:e.getBoundingClientRect().top+scrollY-(narrow.matches?200:165)-2);
  queued=false;let i=0;while(i<anchors.length-1&&scrollY>=anchors[i+1])i++;
  const a=states[i],b=states[Math.min(i+1,states.length-1)],segment=clamp((scrollY-anchors[i])/((anchors[i+1]??(anchors[i]+beats[i].offsetHeight))-anchors[i]));
  const t=reduced.matches?0:smooth(clamp((segment-.68)/.32)),val=k=>mix(a[k],b[k],t),shown=t>.5?b:a;
@@ -167,13 +170,16 @@ function draw(){
  $('map-key').style.opacity=narrow.matches&&(shown.mapSteps||shown.mapQuote)?0:val('key')*val('map');$('map-evidence').style.opacity=shown.mapSteps||shown.mapQuote?val('map'):0;
  [...$('map-key').children].forEach((el,k)=>el.style.display=val(['jacob','john','seaborn'][k])>.02?'flex':'none');
  $('scale-bar').style.width=(804.672*cam.scale)+'px';$('scale-text').textContent='½ mile';
- const same=a.image&&b.image&&records[a.image].image===records[b.image].image;
- imageLayer('a',a,same?1:(a.image?1-t:0),a.id===settledScene?1:segment,same?b:null,same?t:0);imageLayer('b',b,!same&&b.image?t:0,0);
+ // A grouped passage can change its photograph when its next dated section arrives.
+ let visualA=a;
+ if(a.id==='war'&&$('port-hudson').getBoundingClientRect().top<innerHeight*.6){visualA={...a,...data.allScenes.find(s=>s.id==='port-hudson'),id:a.id};}
+ const same=visualA.image&&b.image&&records[visualA.image].image===records[b.image].image;
+ imageLayer('a',visualA,same?1:(visualA.image?1-t:0),a.id===settledScene?1:segment,same?b:null,same?t:0);imageLayer('b',b,!same&&b.image?t:0,0);
  $('document-stage').dataset.mode=shown.documentMode||'record';
  const imageOpacity=mix(a.image?1:0,b.image?1:0,t);$('document-stage').style.opacity=imageOpacity;
- const record=shown.image;const open=$('document-open');open.hidden=!record||imageOpacity<.45;
+ const record=shown===a?visualA.image:shown.image;const open=$('document-open');open.hidden=!record||imageOpacity<.45;
  $('document-stage').style.pointerEvents='none';open.style.pointerEvents=open.hidden?'none':'auto';
- $('document-focus-label').textContent=record?(shown.focusLabel||records[record].transcript?.excerpts[records[record].transcript?.storyExcerpt||0]?.label||''):'';
+ $('document-focus-label').textContent=record?((shown===a?visualA:shown).focusLabel||records[record].transcript?.excerpts[records[record].transcript?.storyExcerpt||0]?.label||''):'';
  if(record){open.dataset.source=record;open.setAttribute('aria-label',`Expand ${records[record].title} to zoom and pan`);open.querySelector('span').innerHTML=esc(data.structure.recordInvitations[record]||('Explore '+records[record].title))+' <b aria-hidden="true">↗</b>';$('document-caption').textContent=records[record].caption||records[record].title;}
  $('family-stage').style.opacity=val('familyVisible');$('graphic-stage').style.opacity=val('graphic');
  $('family-stage').inert=!shown.family;$('graphic-stage').inert=!shown.graphic;
@@ -189,6 +195,8 @@ function draw(){
   const context=$('geographic-context').children;context[0].textContent=shown.mapHeading||'WASHINGTON PARISH';context[1].textContent=shown.mapPlace||'Louisiana · Bogue Chitto River';
  }
  revealGraphic(shown,shown===a?segment:0);
+ const riverActive=riverAtlas.update(a.id,a.id===settledScene?1:segment);
+ document.body.dataset.riverAtlas=riverActive?'active':'inactive';
  $('progress-fill').style.transform=`scaleX(${clamp(scrollY/(document.documentElement.scrollHeight-innerHeight))})`;
  if(active!==i){active=i;$('current-year').textContent=a.year;document.querySelector('.header-place').textContent=a.place;document.body.dataset.scene=a.id;
   $('family-orientation').hidden=a.id==='beginning';
@@ -209,7 +217,7 @@ let current=null,focusOrigin=null;
 history.scrollRestoration='manual';
 function storyPosition(){const i=Math.max(0,active),el=beats[i];return {id:el.id,offset:scrollY-(el.getBoundingClientRect().top+scrollY),y:scrollY};}
 function revealTarget(id){const el=$(id);for(let p=el;p;p=p.parentElement)if(p.tagName==='DETAILS')p.open=true;measure();return el;}
-function restore(pos){if(!pos)return;const el=revealTarget(pos.id);const y=el?el.getBoundingClientRect().top+scrollY+pos.offset:pos.y;scrollTo({top:y,behavior:'instant'});schedule();}
+function restore(pos){if(!pos)return;const el=revealTarget(pos.id);const y=el?el.getBoundingClientRect().top+scrollY+pos.offset:pos.y;scrollTo({top:y,behavior:'instant'});draw();}
 function closeSurfaces(){for(const d of document.querySelectorAll('dialog[open]'))d.close();viewer.cancelGesture();document.body.classList.remove('dialog-open');}
 function showRoute(state){
  const prev=current;closeSurfaces();current=state;
@@ -312,5 +320,5 @@ document.addEventListener('toggle',e=>{if(e.target.matches('.passage-records,.st
 addEventListener('pagehide',()=>{if(saveEnabled&&active>0&&!document.querySelector('dialog[open]'))try{localStorage.setItem('alford-reading-place',JSON.stringify(storyPosition()));}catch{}});
 addEventListener('hashchange',()=>{const hash=decodeURIComponent(location.hash.slice(1)),[kind,key]=hash.split('/'),s=history.state;if((s?.kind===kind&&s?.key===key)||(s?.kind==='story'&&s?.story?.id===hash))return;initialRoute();});
 addEventListener('load',()=>{initialRoute();saveEnabled=true;});measure();
-window.alfordWalk={getState:()=>frameState,states,sourceNotes:records,refresh:measure,viewer};
+window.alfordWalk={riverAtlas,getState:()=>frameState,states,sourceNotes:records,refresh:measure,viewer};
 })();

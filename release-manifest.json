@@ -221,8 +221,8 @@
       "sha256": "15c7e6ef9ad4462a4eb6a6de8e22aeb8708b6574241f345867a43b2ea56acc9c"
     },
     "index.html": {
-      "bytes": 520116,
-      "sha256": "8ccbb0890c4564f811051a260332958572c41636655c3aabee0ac533ea6bb5ee"
+      "bytes": 520310,
+      "sha256": "4a92306431f4527214b9d783794b233de3e18d9c644c95b2f00452ee63af2330"
     },
     "reading.css": {
       "bytes": 1753,
@@ -231,6 +231,14 @@
     "record-viewer.js": {
       "bytes": 8350,
       "sha256": "ce2bffad2e8b11682e213232394d2414fc3d6fb67ed4c5641cf161940a6b896f"
+    },
+    "river-atlas.css": {
+      "bytes": 8559,
+      "sha256": "a9c35e8a019822bd75c51140efb9cc53a1367388ee63bdc3bf0673f6b00f12ff"
+    },
+    "river-atlas.js": {
+      "bytes": 11970,
+      "sha256": "d4e85d4daba153b91506225685c5133210cbf95ea92bfe7dd3c4bf763253a8d9"
     },
     "story.html": {
       "bytes": 106330,
@@ -241,22 +249,22 @@
       "sha256": "cec3da1650c93aaac3e8b27c5987cd8ca849b96ba54c3ceac703ebc9d165c7ce"
     },
     "walk-data.js": {
-      "bytes": 233801,
-      "sha256": "6531cc63a149e05408b620559e7c2b9bebe33f1a0427d6e4cf626e50f5145896"
+      "bytes": 235892,
+      "sha256": "d3c2bbdbdd363346d3aa25db332b900be2251c67bdf10b717b1575aa238e68b6"
     },
     "walk-map.js": {
-      "bytes": 13274,
-      "sha256": "f95de968af09168d940d245ef060b9a133fa570b2fbc66043da4659c5afb2d29"
+      "bytes": 14428,
+      "sha256": "97d4099be5f0944c35cef23aced6c9edc87598e21cf3333536e734dd64f66248"
     },
     "walk.css": {
-      "bytes": 62385,
-      "sha256": "08b34eac0c69d55475c914e2987cded01d3d30eac3a1b2da1b88f9d23a68a65e"
+      "bytes": 62383,
+      "sha256": "2e5f01fe8d903ed1a11033123349387c820e51dd671dd725c56d50fc34a0388b"
     },
     "walk.js": {
-      "bytes": 39714,
-      "sha256": "bec8253073ed04a247b19ed17e084150fe9c05658da75cd61e9fd104cdf84d19"
+      "bytes": 40614,
+      "sha256": "7ca4fbafa07dbb9a22fddbb93666835e96ca0fa3054626851906cecd5df41cca"
     }
   },
-  "bytes": 40300214,
-  "reviewSha256": "77c72faf11da534311d01b46e0d47da892766c951b5e46ce3e23959a3fcae972"
+  "bytes": 40325080,
+  "reviewSha256": "801ce5c8c6780f340d3fd1f496ed78e5f0f0de18c7e45ddbcf43f4bfea2c945b"
 }
