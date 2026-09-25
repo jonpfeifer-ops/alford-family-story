@@ -197,38 +197,38 @@
       "sha256": "584d080e11e0c0c86e6d1e6935022eacf07625a930011be8eded7ddd6eb7a55e"
     },
     "index.html": {
-      "bytes": 258880,
-      "sha256": "2c34c391e9b2a48dc0ea37beb73d131d6ad72401ad3ada6ca9234a6b269b0424"
+      "bytes": 264722,
+      "sha256": "11c890ef0622c81d56d9fc3c1d922cd0c731bbff678f26170433ca2cb5627d57"
     },
     "reading.css": {
-      "bytes": 1070,
-      "sha256": "c58aeae91668c8c1e29444e5fa87e894b3a91e634d4ed6d2bb77f056e401c0d5"
+      "bytes": 1753,
+      "sha256": "758aa18d475d212fe50a11d1c5797005baee8b1732b4e5ce88affd1f39f1d9e1"
     },
     "record-viewer.js": {
       "bytes": 8350,
       "sha256": "ce2bffad2e8b11682e213232394d2414fc3d6fb67ed4c5641cf161940a6b896f"
     },
     "story.html": {
-      "bytes": 79600,
-      "sha256": "0d00c777ddf8ae7e251b4dd2f1fa901731029e9099ee8c279059e2547667a6dc"
+      "bytes": 96638,
+      "sha256": "2803830f29333d65fed54b015896cac7b66e3d463b300c2c333176ea759b011f"
     },
     "walk-data.js": {
-      "bytes": 118696,
-      "sha256": "748d9edc7f6885eae5577d3af27cd310a5b8d0374bf48f2eb9a75e9309a8d6a2"
+      "bytes": 130127,
+      "sha256": "f1ff37cfe16526434d335924b36deeeb72cf6c4aa11e8ed26bc4d320a3bf74fb"
     },
     "walk-map.js": {
       "bytes": 13274,
       "sha256": "f95de968af09168d940d245ef060b9a133fa570b2fbc66043da4659c5afb2d29"
     },
     "walk.css": {
-      "bytes": 36060,
-      "sha256": "dd267c15259d8d4f8d1511bbb13f6d7de875dc2a0be5e4e0905a347501cbd895"
+      "bytes": 41505,
+      "sha256": "15ac6b774ede041e8eb0906d2eae26d6116d1e9afa0e656516782f2478ebd405"
     },
     "walk.js": {
-      "bytes": 19541,
-      "sha256": "3dcfcf7d1f90edf95fec8bb5baa0a4744deb673827bb43a7bc93205cf54487ef"
+      "bytes": 27118,
+      "sha256": "5f5518b08c7c969a34334fde5d9fad99ab3f4076b6008809a9e5ee7f1f7df726"
     }
   },
-  "bytes": 39649334,
-  "reviewSha256": "0ee9b0239ab7ab52a454e93dc23b36be21ee505922e496d566215334bcd80079"
+  "bytes": 39697350,
+  "reviewSha256": "142358f41e38ebe75d03c855af7b9ab46b6f9fd94837fbc67e87694f0d44fa59"
 }
