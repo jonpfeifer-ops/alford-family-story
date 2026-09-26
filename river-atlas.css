@@ -22,3 +22,27 @@ body[data-river-atlas=active] :is(#land-map,#map-labels,#map-evidence,#map-compa
 
 /* Keep focus on atlas controls from scrolling the sticky illustration internally. */
 body[data-river-atlas=active] .landscape{overflow:clip}
+
+/* Regional approach: actual terrain and drainage, with towns kept in screen space. */
+.border-region{pointer-events:none}.border-relief{opacity:.25;mix-blend-mode:multiply}
+.border-county{fill:none;stroke:#75836c70;stroke-width:.6;stroke-dasharray:3 4}
+.border-water-minor{fill:none;stroke:#6c969c;stroke-width:.65;stroke-opacity:.7}
+.border-water-halo{fill:none;stroke:#d1e1d88f;stroke-width:5}
+.border-water-main{fill:none;stroke:#3b7a87;stroke-width:1.6}
+.border-label{position:absolute;width:max-content;opacity:0;max-width:140px;font:11px var(--sans);color:#46614e;text-shadow:0 0 4px #eef0e4,0 0 4px #eef0e4,0 0 4px #eef0e4}
+.border-label-river{font:italic 17px var(--serif);color:#376e7d}
+.border-town-dot{fill:#f4f1df;stroke:#466650;stroke-width:1.3}
+.border-inset{position:absolute;right:12px;bottom:12px;width:84px;height:89px;background:#f4f1e7e8;border:1px solid #a1ac93;box-shadow:0 3px 14px #3a583818;pointer-events:none}
+.border-inset svg{display:block;width:100%;height:100%}.border-inset path{fill:#d5ddcb;stroke:#7f9475;stroke-width:2200}.border-inset .state-LA{fill:#e1d7b8}.border-inset rect{fill:#b783393a;stroke:#946c2a;stroke-width:3000}.border-inset text{font:10px var(--sans);fill:#526b52}
+.river-atlas[data-orientation=origins] .river-atlas-canvas{background:#e7eadb}
+.river-atlas[data-orientation=origins] .river-person{padding:6px 9px;background:#f7f3e7e8;box-shadow:0 3px 12px #263f3017}
+.river-atlas[data-orientation=origins] .river-atlas-grid{opacity:.1}
+.river-atlas[data-orientation=origins] .river-atlas-tract.jacob{fill:#c093375e;stroke:#98722d;stroke-width:1.8}
+.river-atlas[data-orientation=origins] .river-orientation-state{font-size:9px;letter-spacing:.13em;text-shadow:0 0 4px #eef0e4,0 0 4px #eef0e4}
+@media(max-width:700px){.border-inset{width:58px;height:64px;right:9px;bottom:10px}.border-label{font-size:10px;max-width:115px}.border-label-river{font-size:14px}.river-atlas[data-orientation=origins] .river-person{padding:4px 6px}.river-atlas[data-orientation=origins] .river-person b{font-size:11px}.river-atlas[data-orientation=origins] .river-person small{font-size:9px}.river-atlas[data-orientation=origins] .river-orientation-state{font-size:8px}}
+
+.river-atlas-map .border-area-main{fill:#6595a0;stroke:#3b7a87;stroke-width:.9}.river-atlas-map .border-area-minor{fill:#9dbbbd;stroke:#7da5a8;stroke-width:.4}
+
+.border-claim-leader{fill:none;stroke:#9c7737;stroke-width:.8;opacity:0}
+@media(max-width:700px){.river-atlas[data-scene=twins]{height:min(60svh,510px)}#twins{padding-top:calc(min(60svh,510px) + 20px)}}
+@media(max-width:360px){.border-inset{display:none}}

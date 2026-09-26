@@ -245,7 +245,8 @@ function draw(){
   $('family-orientation').hidden=a.id==='beginning';
   const who={earlier:'Julius & Jacob · likely earlier ancestry',john:'John & Margaret · Christine’s great-grandparents',seaborn:'Seaborn & Laura · Christine’s grandparents',esco:'Esco & Mary Lou · Christine’s parents',christine:'Christine · the next generation'};
   $('family-context').innerHTML=`<span class="family-desktop">${esc(who[a.focus]||'')}</span><span class="chapter-mobile">${a.chapter?'Chapter '+a.part+' · '+esc(data.chapters.find(c=>c.id===a.chapter).title):''}</span>`;
-  $('family-orientation').querySelectorAll('[data-person]').forEach(e=>{e.classList.toggle('current',e.dataset.person===a.focus);if(e.dataset.person===a.focus)e.setAttribute('aria-current','true');else e.removeAttribute('aria-current');});
+  const focusPerson=a.focus==='earlier'?(a.id==='north-carolina'?'julius-bute':'jacob-twins-father'):a.focus;
+  $('family-orientation').querySelectorAll('[data-person]').forEach(e=>{e.classList.toggle('current',e.dataset.person===focusPerson);if(e.dataset.person===focusPerson)e.setAttribute('aria-current','true');else e.removeAttribute('aria-current');});
   document.querySelectorAll('.chapter-contents').forEach(d=>{if(d.dataset.chapter===a.chapter)d.open=true;});
   document.querySelectorAll('#contents-dialog nav a').forEach(el=>{if(el.hash==='#'+a.id)el.setAttribute('aria-current','location');else el.removeAttribute('aria-current');});
  }
@@ -351,7 +352,7 @@ addEventListener('popstate',e=>{
 function initialRoute(){
  saveEnabled=false;active=-1;measure();const hash=decodeURIComponent(location.hash.slice(1)),[kind,key]=hash.split('/');
  if((kind==='person'&&people[key])||(kind==='record'&&records[key])){
-  const scene=(kind==='record'&&scenes.find(s=>s.image===key))||scenes.find(s=>!s.hero&&(kind==='person'?s.people.includes(key):s.records.includes(key)))||scenes[1];
+  const scene=(kind==='person'&&people[key].storyStart&&sceneFor(people[key].storyStart))||(kind==='record'&&scenes.find(s=>s.image===key))||scenes.find(s=>!s.hero&&(kind==='person'?s.people.includes(key):s.records.includes(key)))||scenes[1];
   const story={id:scene.id,offset:-77,y:0};restore(story);
   const state={kind,key,story,direct:true,depth:0};history.replaceState(state,'');showRoute(state);
  }else if(new URLSearchParams(location.search).has('resume')){try{const saved=JSON.parse(sessionStorage.getItem('alford-explore-return'));if(saved?.story){settledScene=sceneFor(saved.story.id)?.id;history.replaceState({kind:'story',story:saved.story},'','#'+saved.story.id);showRoute(history.state);if(saved.focus)$(saved.focus)?.focus({preventScroll:true});}}catch{}if(!current){const id=hash&&$(hash)?hash:'beginning';settledScene=sceneFor(id)?.id;showRoute({kind:'story',story:{id,offset:id==='beginning'?0:-145,y:0}});}}else if(hash&&$(hash)){settledScene=sceneFor(hash)?.id;revealTarget(hash);const story={id:hash,offset:innerWidth<=700?-140:-145,y:0};history.replaceState({kind:'story',story},'');showRoute(history.state);}

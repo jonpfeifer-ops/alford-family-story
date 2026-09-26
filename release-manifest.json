@@ -1,5 +1,9 @@
 {
   "files": {
+    "assets/border-hillshade.png": {
+      "bytes": 1604142,
+      "sha256": "b246b28761282d0137005c77437b33ed9998dab3d09d2e81a735f69aab4ae068"
+    },
     "assets/census-1930-excerpt.jpg": {
       "bytes": 968028,
       "sha256": "4f16720562c8a6b3ae69973794774282ebdd133308dfcf8edfbd765ecad5ad4e"
@@ -27,6 +31,10 @@
     "assets/display/esco-portrait-caption.jpg": {
       "bytes": 93863,
       "sha256": "4db5d3c45c75731179509ebabd9ce1b0f377e6ecb149d27f774c585ec1c2da60"
+    },
+    "assets/display/farm-1850.jpg": {
+      "bytes": 391195,
+      "sha256": "89a134d8dabc06bcb0fc3091b8b0946a162dc76a482ed37ca3cb94059abd2694"
     },
     "assets/display/field-detail.jpg": {
       "bytes": 49941,
@@ -124,6 +132,10 @@
       "bytes": 199054,
       "sha256": "dc6bd04a5e809645c0948a921de31bdb4ca521af25ecc5249130fc288f61c876"
     },
+    "assets/farm-1850.jpg": {
+      "bytes": 1540866,
+      "sha256": "312af194e769d4b502ac741e9495bd0dbb5948b4e6fa38d3bf81ccd343f0c7b6"
+    },
     "assets/jacob-deed-1789.jpg": {
       "bytes": 1656670,
       "sha256": "3fc82cdd13822ab6f7775a4bd30d19366fff67fa964a2f2a99cced52e33e31e7"
@@ -197,16 +209,16 @@
       "sha256": "584d080e11e0c0c86e6d1e6935022eacf07625a930011be8eded7ddd6eb7a55e"
     },
     "experience.css": {
-      "bytes": 19670,
-      "sha256": "d3aaba9d000d97dbc97a7b081562172d18065d18c68da30731de022e699d84b2"
+      "bytes": 20612,
+      "sha256": "c8b9daf6e72e509380cc62ac5e55c4606891675f9cfe14835084a9e4234e65cc"
     },
     "explore-data.js": {
-      "bytes": 53591,
-      "sha256": "244e29fff5f5f32cbe58bb1b50764182d8f2045387edc202df5a72e2e06c5bd8"
+      "bytes": 55325,
+      "sha256": "2b5c72d6f0a95a1075e1eb18fe421a1812e86c89bdd9adf3a184bc664592a162"
     },
     "explore-reading.html": {
-      "bytes": 47991,
-      "sha256": "c3e9ba4e03cb9fc7232d2a41e34c1ded4ed7754cbdcbf25d66da1e1fc71c5421"
+      "bytes": 49794,
+      "sha256": "1b113e92bdb2f92d6ace5e63164c95b1fc24daa8be75a3a1ff303f920782706a"
     },
     "explore.css": {
       "bytes": 24422,
@@ -221,8 +233,8 @@
       "sha256": "15c7e6ef9ad4462a4eb6a6de8e22aeb8708b6574241f345867a43b2ea56acc9c"
     },
     "index.html": {
-      "bytes": 520945,
-      "sha256": "fbfd072e39a431333524aeda54096c63562b86c4594eb9a67ff71f7440baf0bf"
+      "bytes": 522856,
+      "sha256": "47b60c51f85ed5df66482aac5b0fc7de50dfece5371eab138355f2ea1438c9d8"
     },
     "reading.css": {
       "bytes": 1753,
@@ -233,38 +245,38 @@
       "sha256": "ce2bffad2e8b11682e213232394d2414fc3d6fb67ed4c5641cf161940a6b896f"
     },
     "river-atlas.css": {
-      "bytes": 9644,
-      "sha256": "2622ddecb2e3493c126d31dff68e7d45932d3fb1e2157480d56bf07e3be06555"
+      "bytes": 12261,
+      "sha256": "76cf21ede3514a28cd1960fbf2924a482aa8baeac0f4e2650c1c6274ca872c34"
     },
     "river-atlas.js": {
-      "bytes": 14398,
-      "sha256": "3f3c2b5cdacae92ec649601ea5fc3b4a499a6431f6bd06cca6f832ca9a105db4"
+      "bytes": 17764,
+      "sha256": "e135bbd4d116a6737c25236131b55b41648bd28a7b1cbfa2ffb32ff37690cee2"
     },
     "story.html": {
-      "bytes": 101729,
-      "sha256": "f02fb69a7e87d2046e74e77e155262eeaa4b0adb1378a0a95d2b67e8330cfbd0"
+      "bytes": 107635,
+      "sha256": "eb7dc5d494f85944492367e208063838a3011c6e68c4aaaf260d9f0356f92cc0"
     },
     "tree-engine.js": {
       "bytes": 22843,
       "sha256": "cec3da1650c93aaac3e8b27c5987cd8ca849b96ba54c3ceac703ebc9d165c7ce"
     },
     "walk-data.js": {
-      "bytes": 453120,
-      "sha256": "87ac9c3247e37e394b7897fc58bc6cbc0bc62b2e237d03d4c0f5fd2358ea83af"
+      "bytes": 463542,
+      "sha256": "ced97c97e5cf94a1b53952660ff0d4683c42ee208eba1dc373f35990f209c5b8"
     },
     "walk-map.js": {
-      "bytes": 14624,
-      "sha256": "8befb64615f6756bc2536877f835241a05c7051eb43ceff26a34012e46355697"
+      "bytes": 1172439,
+      "sha256": "4e28754819d290e14f3b62088a0f7716dad08368e0bdf04a59d28ccbf55d61d2"
     },
     "walk.css": {
       "bytes": 67141,
       "sha256": "a94a0bf5f5d91ea599ecf1eea2724302d6bd93d552c1811cf9bb63dd02d25e9c"
     },
     "walk.js": {
-      "bytes": 45678,
-      "sha256": "cbeafe811e4285802b3e19772a5622aa218d8ec79b0c7f3a3d2ff8bf337fd184"
+      "bytes": 45873,
+      "sha256": "03fe1f036384839e56bb50294fdecd51d3a13a90665687e62b8e2708339280bc"
     }
   },
-  "bytes": 40545854,
-  "reviewSha256": "255582c5b1fd578c63e93417ce95eb3751dfe08206d61fbd6b76ff4ad63e05ad"
+  "bytes": 45268768,
+  "reviewSha256": "a63e8933897dab012c7409ae67d06922d42ff92f48d11f6a187e078541b2f692"
 }
